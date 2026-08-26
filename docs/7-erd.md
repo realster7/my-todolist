@@ -5,6 +5,7 @@
 | 버전  | 날짜       | 작성자     | 변경 내용     |
 | ----- | ---------- | ---------- | -------------- |
 | 0.1.0 | 2026-08-26 | Daniel Kim | 최초 초안 작성 |
+| 0.1.1 | 2026-08-26 | Daniel Kim | schema_migrations(도구용 메타데이터) 각주 추가 |
 
 ---
 
@@ -81,3 +82,7 @@ erDiagram
 ## 4. 참고: 인덱스 대상 컬럼
 
 `5-project-principle.md` 5.4절 기준, 목록/필터링(UC-05/06) 성능을 위해 `todos.user_id`, `todos.category_id`, `todos.(start_date, end_date)`에 인덱스를 건다. 구체적인 인덱스 정의는 마이그레이션 파일에서 다룬다.
+
+## 5. 참고: 도구용 메타데이터 테이블
+
+`schema_migrations`(filename, applied_at) 테이블은 `backend/src/db/migrate.js`(DB-03)가 적용된 마이그레이션을 추적하기 위해 자동 생성하는 도구용 테이블이며, 도메인 모델(2장 ERD)에 포함되지 않는다.

@@ -5,6 +5,7 @@
 | 버전  | 날짜       | 작성자     | 변경 내용     |
 | ----- | ---------- | ---------- | -------------- |
 | 0.1.0 | 2026-08-26 | Daniel Kim | 최초 초안 작성 |
+| 0.2.0 | 2026-08-26 | Daniel Kim | DB-03(마이그레이션 실행 스크립트)/DB-04(시드 데이터)/DB-05(커넥션 풀 소규모 측정) Task 추가 |
 
 ---
 
@@ -38,6 +39,33 @@
   - [x] "기본" 카테고리 자동 생성 책임이 BE-06(서비스 레이어)에 있음을 주석 또는 커밋 메시지로 기록
 - **선행 Task**: DB-01
 
+### DB-03. 마이그레이션 실행 스크립트
+
+- **수행 작업**: `backend/src/db/migrate.js` 작성 — `db/migrations/*.sql`을 파일명 순서대로 실행하고, `schema_migrations` 테이블에 적용 이력을 기록해 이미 적용된 파일은 재실행하지 않는다(project-principle 5-project-principle.md 2.2절/7장, "간단한 실행 스크립트"를 실체화). `package.json`에 `"migrate"` 스크립트 추가.
+- **완료 조건**:
+  - [x] `npm run migrate`로 001~004 마이그레이션이 순서대로 적용된다
+  - [x] 이미 적용된 마이그레이션은 재실행 시 건너뛴다(`schema_migrations` 기준)
+  - [x] 빈 DB(테이블 없는 상태)에 대해 처음부터 실행해도 오류 없이 전체 스키마가 생성된다
+- **선행 Task**: DB-02
+
+### DB-04. 시드 데이터
+
+- **수행 작업**: `backend/src/db/seed.js` 작성 — 개발/테스트용 샘플 데이터(사용자 1~2명, 사용자별 기본 카테고리 + 커스텀 카테고리 1개 이상, 4개 상태를 모두 포함하는 Todo 여러 건) 삽입. `package.json`에 `"seed"` 스크립트 추가, 재실행해도 안전하게 동작(중복 삽입 방지).
+- **완료 조건**:
+  - [x] `npm run seed` 실행 시 users/categories/todos에 샘플 데이터가 삽입된다
+  - [x] 삽입된 Todo가 시작전/진행중/완료/지연 4개 상태를 각각 최소 1건 포함한다(도메인정의서 5장 규칙 기준)
+  - [x] 같은 명령을 재실행해도 중복 삽입 없이 안전하게 동작한다
+- **선행 Task**: DB-03
+
+### DB-05. 커넥션 풀 소규모 측정
+
+- **수행 작업**: `backend/src/db/loadtest.js` 작성 — DB-04 시드 데이터를 대상으로 동시 커넥션 N건(예: 20/50)에서 `todos` 조회 쿼리를 동시 실행해 응답시간을 측정. 측정 결과를 근거로 `pool.js`의 `max` 값을 유지/조정하고 결과를 5-project-principle.md 5.4절에 기록한다. 이 측정은 DB 레벨 소규모 검증이며 PRD의 1,000명 동시접속 목표에 대한 애플리케이션 레벨 실측을 대체하지 않는다(project-principle 4.2절).
+- **완료 조건**:
+  - [x] 동시 연결 20건, 50건 각각에 대한 평균/최대 응답시간이 측정되어 출력된다
+  - [x] 측정 결과와 `pool.js` `max` 값 유지/조정 근거가 5-project-principle.md 5.4절에 반영된다
+  - [x] 측정이 1,000명 동시접속 목표를 검증한 것이 아니라는 점이 문서에 명시된다(과대 해석 방지)
+- **선행 Task**: DB-04
+
 ---
 
 ## 2. Backend
@@ -46,17 +74,17 @@
 
 - **수행 작업**: `backend/` 디렉토리에 Express + pg 기반 프로젝트 초기화(`package.json`, `src/app.js`, `src/config/env.js`, `.env.example`), 5-project-principle.md 7장 디렉토리 구조 생성.
 - **완료 조건**:
-  - [ ] `npm start`(또는 `node src/app.js`)로 서버가 지정 포트에서 기동된다
-  - [ ] `.env.example`에 `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`, `PORT` 키가 존재한다
-  - [ ] `routes/`, `controllers/`, `services/`, `db/queries/`, `middlewares/`, `utils/` 폴더가 생성되어 있다
+  - [x] `npm start`(또는 `node src/app.js`)로 서버가 지정 포트에서 기동된다
+  - [x] `.env.example`에 `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`, `PORT` 키가 존재한다
+  - [x] `routes/`, `controllers/`, `services/`, `db/queries/`, `middlewares/`, `utils/` 폴더가 생성되어 있다
 - **선행 Task**: 없음
 
 ### BE-02. DB 커넥션 풀 연결
 
 - **수행 작업**: `db/pool.js`에 `pg.Pool` 단일 인스턴스 생성(project-principle 5.4절 `max:20` 등 초기값 적용), 앱 기동 시 DB 연결 확인 로직 추가.
 - **완료 조건**:
-  - [ ] 서버 기동 로그에 DB 연결 성공 메시지가 출력된다
-  - [ ] 잘못된 `DATABASE_URL`일 때 명확한 에러로 즉시 종료된다
+  - [x] 서버 기동 로그에 DB 연결 성공 메시지가 출력된다
+  - [x] 잘못된 `DATABASE_URL`일 때 명확한 에러로 즉시 종료된다
 - **선행 Task**: DB-01, BE-01
 
 ### BE-03. 회원가입 API (UC-01)
@@ -279,6 +307,9 @@
 | Task ID | 관련 UC-ID | 관련 BR-ID |
 | --- | --- | --- |
 | DB-01, DB-02 | — | BR-04 |
+| DB-03 | — | — |
+| DB-04 | — | BR-04 (4개 상태 시드는 도메인정의서 5장 규칙 기준) |
+| DB-05 | — | — (PRD 3장 비즈니스 목표 "동시접속 1,000명"과 관련, BR 아님) |
 | BE-03 | UC-01 | BR-03, BR-04 |
 | BE-04, BE-05 | UC-02 | BR-01 |
 | BE-06 | UC-09 | BR-04 |
@@ -300,7 +331,7 @@
 ## 5. 실행 순서 요약 (의존성 흐름)
 
 ```
-DB-01 → DB-02
+DB-01 → DB-02 → DB-03 → DB-04 → DB-05
 DB-01 → BE-02 → BE-03 → BE-04 → BE-05 → BE-06 → BE-07 → BE-08 → BE-09 → BE-10 → BE-11 → BE-12
 BE-01 → BE-02
 FE-01 → FE-02 → FE-04 (+ BE-03)
