@@ -24,18 +24,18 @@
 
 - **수행 작업**: `schema.sql`(users/categories/todos, CHECK/UNIQUE/인덱스 포함)을 마이그레이션 파일로 분리(`001_create_users.sql`, `002_create_categories.sql`, `003_create_todos.sql`, `004_indexes.sql`)하고 로컬 PostgreSQL 17 인스턴스에 적용한다.
 - **완료 조건**:
-  - [ ] 4개 마이그레이션 파일이 `backend/src/db/migrations/`에 존재한다
-  - [ ] `psql`로 마이그레이션 실행 시 오류 없이 users/categories/todos 테이블이 생성된다
-  - [ ] `\d todos`에서 `chk_todos_date_range` CHECK 제약과 FK(user_id, category_id)가 확인된다
-  - [ ] `idx_todos_user_id`, `idx_todos_category_id`, `idx_todos_date_range` 인덱스가 생성된다
+  - [x] 4개 마이그레이션 파일이 `backend/src/db/migrations/`에 존재한다
+  - [x] `psql`로 마이그레이션 실행 시 오류 없이 users/categories/todos 테이블이 생성된다
+  - [x] `\d todos`에서 `chk_todos_date_range` CHECK 제약과 FK(user_id, category_id)가 확인된다
+  - [x] `idx_todos_user_id`, `idx_todos_category_id`, `idx_todos_date_range` 인덱스가 생성된다
 - **선행 Task**: 없음
 
 ### DB-02. 기본 카테고리 생성 규칙 검증
 
 - **수행 작업**: BR-04("기본" 카테고리는 사용자별 최초 1회 자동 생성)를 DB 레벨에서 강제할지, 서비스 레벨(BE-06)에서 강제할지 결정하고 문서화한다(project-principle 2.2절 기준 서비스 레벨로 확정, DB는 UNIQUE(user_id, name) 제약만 담당).
 - **완료 조건**:
-  - [ ] `(user_id, name)` UNIQUE 제약으로 동일 사용자가 같은 이름의 카테고리를 중복 생성할 수 없음을 SQL로 직접 검증(중복 INSERT 시 에러 발생 확인)
-  - [ ] "기본" 카테고리 자동 생성 책임이 BE-06(서비스 레이어)에 있음을 주석 또는 커밋 메시지로 기록
+  - [x] `(user_id, name)` UNIQUE 제약으로 동일 사용자가 같은 이름의 카테고리를 중복 생성할 수 없음을 SQL로 직접 검증(중복 INSERT 시 에러 발생 확인)
+  - [x] "기본" 카테고리 자동 생성 책임이 BE-06(서비스 레이어)에 있음을 주석 또는 커밋 메시지로 기록
 - **선행 Task**: DB-01
 
 ---
