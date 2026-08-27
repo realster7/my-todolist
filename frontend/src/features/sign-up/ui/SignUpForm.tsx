@@ -3,20 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../../shared/ui/Input';
 import { Button } from '../../../shared/ui/Button';
 import { signUp } from '../api/signUp';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
+import { isApiError } from '../../../shared/lib/apiError';
 import './SignUpForm.css';
-
-interface ApiError {
-  status: number;
-  code: string;
-  message: string;
-}
-
-function isApiError(err: unknown): err is ApiError {
-  return typeof err === 'object' && err !== null && 'status' in err && 'code' in err && 'message' in err;
-}
 
 export function SignUpForm() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -39,7 +32,7 @@ export function SignUpForm() {
       } else if (isApiError(err)) {
         setFormError(err.message);
       } else {
-        setFormError('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        setFormError(t('signup.genericError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -54,7 +47,7 @@ export function SignUpForm() {
         </p>
       )}
       <Input
-        label="이메일"
+        label={t('field.email')}
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -62,7 +55,7 @@ export function SignUpForm() {
         required
       />
       <Input
-        label="비밀번호"
+        label={t('field.password')}
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -70,17 +63,17 @@ export function SignUpForm() {
         required
       />
       <Input
-        label="이름"
+        label={t('field.name')}
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
       />
       <Button type="submit" disabled={isSubmitting}>
-        가입하기
+        {t('signup.submit')}
       </Button>
       <p className="sign-up-form__login-link">
-        이미 계정이 있으신가요? <Link to="/login">로그인하기</Link>
+        {t('signup.haveAccount')} <Link to="/login">{t('signup.loginLink')}</Link>
       </p>
     </form>
   );

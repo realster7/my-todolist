@@ -6,6 +6,7 @@
 | ----- | ---------- | ---------- | -------------- |
 | 0.1.0 | 2026-08-27 | Daniel Kim | 최초 초안 작성 (참고 이미지: 캘린더 앱 스크린샷 분석) |
 | 0.2.0 | 2026-08-27 | Daniel Kim | "소프트 파스텔 카드형" 방향으로 팔레트/타이포그래피 교체 (디자인 시안 D안 채택) |
+| 0.3.0 | 2026-08-27 | Daniel Kim | 라이트/다크 모드 지원 추가 (7장 스코프아웃 항목에서 제외, 8장으로 신설) |
 
 ---
 
@@ -154,9 +155,41 @@ D안 채택으로 본문은 Nunito Sans(웹폰트), 헤딩/로고는 Fraunces(�
 
 ---
 
-## 7. 명시적으로 가져오지 않는 것 (스코프 아웃)
+## 8. 다크 모드
 
-- 다크 모드: PRD/도메인정의서에 요구사항 없음, 이번 범위 제외.
+`<html data-theme="dark">` 속성으로 2장의 토큰 값을 통째로 교체하는 방식(별도 컴포넌트 스타일 분기 없음 — 모든 컴포넌트가 이미 CSS 변수 기반이라 자동 반영).
+
+- **초기값 결정**: `localStorage`에 저장된 선택이 있으면 그 값, 없으면 `prefers-color-scheme: dark` 시스템 설정을 따른다.
+- **전환**: Header의 토글 버튼(🌙/☀️) 클릭 시 전환하고 `localStorage`에 저장한다. 로그인/회원가입 화면은 Header가 없어 토글 버튼은 안 보이지만, 저장된 값은 전 화면(`<html>` 속성)에 적용된다.
+- **다크 팔레트** (2장 라이트 값 대응):
+
+| 토큰 | 라이트 | 다크 |
+| --- | --- | --- |
+| `--color-primary` | `#7C6FE0` | `#9C90F0` |
+| `--color-primary-hover` | `#5F51CC` | `#B3A8F5` |
+| `--color-primary-bg` | `#EEEBFB` | `#35304A` |
+| `--color-success` | `#4FA989` | `#6FC7A6` |
+| `--color-success-bg` | `#E4F3EC` | `#253D33` |
+| `--color-danger` | `#E8896A` | `#F0A585` |
+| `--color-danger-bg` | `#FBEAE2` | `#402C24` |
+| `--color-neutral` | `#8A8394` | `#ADA5B8` |
+| `--color-neutral-bg` | `#F1EDF7` | `#332D3E` |
+| `--color-bg` | `#FBF6F0` | `#1F1B24` |
+| `--color-bg-subtle` | `#F5EFE7` | `#262130` |
+| `--color-surface` | `#FFFFFF` | `#2A2433` |
+| `--color-border` | `#EAE4F0` | `#3A3342` |
+| `--color-border-subtle` | `#F0EBE4` | `#332D3B` |
+| `--color-text-primary` | `#3F3A45` | `#F1ECF7` |
+| `--color-text-secondary` | `#8A8394` | `#B3ABC0` |
+| `--shadow-card` | `0 4px 14px rgba(124,111,224,0.10)` | `0 4px 14px rgba(0,0,0,0.35)` |
+| `--shadow-modal` | `0 8px 24px rgba(63,58,69,0.16)` | `0 8px 24px rgba(0,0,0,0.5)` |
+
+`--color-text-on-primary`(`#FFFFFF`)는 라이트/다크 공통.
+
+---
+
+## 9. 명시적으로 가져오지 않는 것 (스코프 아웃)
+
 - 애니메이션/트랜지션 라이브러리: hover/focus 정도의 CSS transition(150ms ease)만 사용, Framer Motion 등 도입 안 함.
 - 아이콘 라이브러리: MVP 화면 수가 적어(5개 내외) SVG 직접 인라인 또는 최소 아이콘 세트로 충분, 별도 아이콘 패키지 설치는 실제 화면 구현 시 필요성이 드러나면 그때 판단(YAGNI).
-- 커스텀 폰트 로딩: 시스템 폰트 스택으로 대체(3장), 웹폰트 성능 비용 회피.
+- 커스텀 폰트 로딩: 로고/헤딩에 한해 Google Fonts(Fraunces) 사용(3장), 그 외는 시스템 폰트 스택 유지.

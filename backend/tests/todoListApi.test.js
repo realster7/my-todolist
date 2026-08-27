@@ -54,7 +54,7 @@ test.before(async () => {
   userA = await authService.signup(EMAIL_A, PASSWORD, '목록A');
   userB = await authService.signup(EMAIL_B, PASSWORD, '목록B');
 
-  const workCategory = await categoryQueries.createCategory(pool, { userId: userA.id, name: '업무' });
+  const workCategory = await categoryQueries.createCategory(pool, { userId: userA.id, name: '여행' });
   workCategoryIdA = workCategory.id;
 
   const categoriesA = await categoryQueries.findCategoriesByUserId(pool, userA.id);

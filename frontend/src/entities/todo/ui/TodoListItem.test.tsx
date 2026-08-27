@@ -47,4 +47,16 @@ describe('TodoListItem', () => {
 
     expect(screen.getByRole('checkbox')).toBeChecked();
   });
+
+  it('isDone이 true인 할일은 제목에 취소선 클래스가 붙는다', () => {
+    renderItem({ todo: { ...baseTodo, isDone: true }, categoryName: '기본' });
+
+    expect(screen.getByText('알고리즘 과제')).toHaveClass('todo-list-item__title--done');
+  });
+
+  it('isDone이 false인 할일은 취소선 클래스가 없다', () => {
+    renderItem({ todo: baseTodo, categoryName: '기본' });
+
+    expect(screen.getByText('알고리즘 과제')).not.toHaveClass('todo-list-item__title--done');
+  });
 });

@@ -1,13 +1,15 @@
 import { useCategories } from '../../../entities/category/api/useCategories';
 import type { TodoStatus } from '../../../entities/todo/model/types';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
+import type { TranslationKey } from '../../../shared/lib/i18n/translations';
 import './TodoFilterBar.css';
 
-const STATUS_OPTIONS: { value: TodoStatus | undefined; label: string }[] = [
-  { value: undefined, label: '전체' },
-  { value: 'NOT_STARTED', label: '시작전' },
-  { value: 'IN_PROGRESS', label: '진행중' },
-  { value: 'DONE', label: '완료' },
-  { value: 'OVERDUE', label: '지연' },
+const STATUS_OPTIONS: { value: TodoStatus | undefined; labelKey: TranslationKey }[] = [
+  { value: undefined, labelKey: 'status.all' },
+  { value: 'NOT_STARTED', labelKey: 'status.notStarted' },
+  { value: 'IN_PROGRESS', labelKey: 'status.inProgress' },
+  { value: 'DONE', labelKey: 'status.done' },
+  { value: 'OVERDUE', labelKey: 'status.overdue' },
 ];
 
 interface TodoFilterBarProps {
@@ -19,13 +21,14 @@ interface TodoFilterBarProps {
 
 export function TodoFilterBar({ category, status, onCategoryChange, onStatusChange }: TodoFilterBarProps) {
   const { data: categories } = useCategories();
+  const { t } = useLocale();
 
   return (
     <div className="todo-filter-bar">
       <label className="todo-filter-bar__category">
-        카테고리
+        {t('field.category')}
         <select value={category ?? ''} onChange={(e) => onCategoryChange(e.target.value || undefined)}>
-          <option value="">전체</option>
+          <option value="">{t('status.all')}</option>
           {categories?.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -36,12 +39,12 @@ export function TodoFilterBar({ category, status, onCategoryChange, onStatusChan
       <div className="todo-filter-bar__status-group">
         {STATUS_OPTIONS.map((opt) => (
           <button
-            key={opt.label}
+            key={opt.labelKey}
             type="button"
             className={status === opt.value ? 'active' : ''}
             onClick={() => onStatusChange(opt.value)}
           >
-            {opt.label}
+            {t(opt.labelKey)}
           </button>
         ))}
       </div>

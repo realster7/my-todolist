@@ -6,11 +6,13 @@ import { Button } from '../../../shared/ui/Button';
 import { CategorySelect } from '../../../entities/category/ui/CategorySelect';
 import { createTodo } from '../api/createTodo';
 import { isApiError } from '../../../shared/lib/apiError';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
 import './TodoForm.css';
 
 export function TodoForm() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useLocale();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -24,12 +26,12 @@ export function TodoForm() {
     setFormError(undefined);
 
     if (!title || !startDate || !endDate) {
-      setFormError('제목/시작일/종료일을 입력해주세요.');
+      setFormError(t('todoForm.requiredError'));
       return;
     }
 
     if (endDate < startDate) {
-      setFormError('종료일은 시작일보다 빠를 수 없습니다.');
+      setFormError(t('todoForm.dateOrderError'));
       return;
     }
 
@@ -48,7 +50,7 @@ export function TodoForm() {
       if (isApiError(err)) {
         setFormError(err.message);
       } else {
-        setFormError('할일 등록에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        setFormError(t('todoForm.createGenericError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -63,27 +65,27 @@ export function TodoForm() {
         </p>
       )}
       <Input
-        label="제목"
+        label={t('field.title')}
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         required
       />
       <Input
-        label="설명"
+        label={t('field.description')}
         type="text"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <Input
-        label="시작일"
+        label={t('field.startDate')}
         type="date"
         value={startDate}
         onChange={(e) => setStartDate(e.target.value)}
         required
       />
       <Input
-        label="종료일"
+        label={t('field.endDate')}
         type="date"
         value={endDate}
         onChange={(e) => setEndDate(e.target.value)}
@@ -91,7 +93,7 @@ export function TodoForm() {
       />
       <CategorySelect value={categoryId} onChange={setCategoryId} />
       <Button type="submit" disabled={isSubmitting}>
-        등록하기
+        {t('todoForm.createSubmit')}
       </Button>
     </form>
   );

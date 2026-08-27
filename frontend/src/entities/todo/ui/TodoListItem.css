@@ -26,6 +26,11 @@
   color: var(--color-text-primary);
 }
 
+.todo-list-item__title--done {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
 .todo-list-item__period {
   font-family: var(--font-family);
   font-size: var(--font-size-caption);

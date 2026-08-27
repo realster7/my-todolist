@@ -17,6 +17,7 @@
   font-family: var(--font-family);
   font-size: var(--font-size-body);
   color: var(--color-text-primary);
+  background: var(--color-surface);
 }
 
 .input-field__input:focus {

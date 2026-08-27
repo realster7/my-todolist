@@ -8,6 +8,7 @@ import { updateTodo } from '../api/updateTodo';
 import { deleteTodo } from '../../delete-todo/api/deleteTodo';
 import { DeleteConfirmModal } from '../../delete-todo/ui/DeleteConfirmModal';
 import { isApiError } from '../../../shared/lib/apiError';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
 import type { TodoWithStatus } from '../../../entities/todo/model/types';
 import './EditTodoForm.css';
 
@@ -18,6 +19,7 @@ interface EditTodoFormProps {
 export function EditTodoForm({ todo }: EditTodoFormProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useLocale();
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description ?? '');
   const [startDate, setStartDate] = useState(todo.startDate);
@@ -35,12 +37,12 @@ export function EditTodoForm({ todo }: EditTodoFormProps) {
     setFormError(undefined);
 
     if (!title || !startDate || !endDate) {
-      setFormError('제목/시작일/종료일을 입력해주세요.');
+      setFormError(t('todoForm.requiredError'));
       return;
     }
 
     if (endDate < startDate) {
-      setFormError('종료일은 시작일보다 빠를 수 없습니다.');
+      setFormError(t('todoForm.dateOrderError'));
       return;
     }
 
@@ -60,7 +62,7 @@ export function EditTodoForm({ todo }: EditTodoFormProps) {
       if (isApiError(err)) {
         setFormError(err.message);
       } else {
-        setFormError('할일 수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        setFormError(t('todoForm.editGenericError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -75,7 +77,7 @@ export function EditTodoForm({ todo }: EditTodoFormProps) {
       await queryClient.invalidateQueries({ queryKey: ['todos'] });
       navigate('/todos');
     } catch (err) {
-      setDeleteError(isApiError(err) ? err.message : '삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      setDeleteError(isApiError(err) ? err.message : t('todoForm.deleteGenericError'));
     } finally {
       setIsDeleting(false);
     }
@@ -90,27 +92,27 @@ export function EditTodoForm({ todo }: EditTodoFormProps) {
         </p>
       )}
       <Input
-        label="제목"
+        label={t('field.title')}
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         required
       />
       <Input
-        label="설명"
+        label={t('field.description')}
         type="text"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <Input
-        label="시작일"
+        label={t('field.startDate')}
         type="date"
         value={startDate}
         onChange={(e) => setStartDate(e.target.value)}
         required
       />
       <Input
-        label="종료일"
+        label={t('field.endDate')}
         type="date"
         value={endDate}
         onChange={(e) => setEndDate(e.target.value)}
@@ -119,13 +121,13 @@ export function EditTodoForm({ todo }: EditTodoFormProps) {
       <CategorySelect value={categoryId} onChange={setCategoryId} />
       <label className="edit-todo-form__done">
         <input type="checkbox" checked={isDone} onChange={(e) => setIsDone(e.target.checked)} />
-        완료 처리
+        {t('todoForm.done')}
       </label>
       <Button type="submit" disabled={isSubmitting}>
-        저장하기
+        {t('todoForm.editSubmit')}
       </Button>
       <Button type="button" variant="danger" onClick={() => setIsDeleteModalOpen(true)}>
-        삭제
+        {t('todoForm.delete')}
       </Button>
     </form>
     <DeleteConfirmModal

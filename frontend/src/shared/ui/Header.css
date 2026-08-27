@@ -13,6 +13,7 @@
   font-size: var(--font-size-title);
   font-weight: 600;
   color: var(--color-text-primary);
+  text-decoration: none;
 }
 
 .app-header__nav {
@@ -34,4 +35,51 @@
 
 .app-header__link:hover {
   color: var(--color-primary);
+}
+
+.app-header__locale-select {
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: 12px;
+  padding: 0 var(--space-2);
+  cursor: pointer;
+}
+
+.app-header__theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.app-header__theme-toggle:hover {
+  background: var(--color-neutral-bg);
+}
+
+/* 언어 선택/테마 토글이 추가되며 nav 항목이 늘어나 좁은 화면에서 넘칠 수 있어 줄바꿈 허용.
+   전용 햄버거 메뉴는 항목 수가 적어(4개) 별도 컴포넌트 없이 flex-wrap으로 대응(YAGNI). */
+@media (max-width: 767px) {
+  .app-header {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .app-header__nav {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
 }

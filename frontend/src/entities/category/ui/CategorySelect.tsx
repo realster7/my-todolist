@@ -1,4 +1,5 @@
 import { useCategories } from '../api/useCategories';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
 import './CategorySelect.css';
 
 interface CategorySelectProps {
@@ -8,12 +9,13 @@ interface CategorySelectProps {
 
 export function CategorySelect({ value, onChange }: CategorySelectProps) {
   const { data: categories } = useCategories();
+  const { t } = useLocale();
 
   return (
     <label className="category-select">
-      카테고리
+      {t('field.category')}
       <select value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">기본 (자동 지정)</option>
+        <option value="">{t('field.categoryDefault')}</option>
         {categories?.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}

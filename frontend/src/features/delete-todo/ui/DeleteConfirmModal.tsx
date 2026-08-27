@@ -1,5 +1,6 @@
 import { Modal } from '../../../shared/ui/Modal';
 import { Button } from '../../../shared/ui/Button';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
 import './DeleteConfirmModal.css';
 
 interface DeleteConfirmModalProps {
@@ -19,17 +20,18 @@ export function DeleteConfirmModal({
   isDeleting,
   error,
 }: DeleteConfirmModalProps) {
+  const { t } = useLocale();
   return (
-    <Modal open={open} onClose={onClose} title="할일을 삭제하시겠습니까?">
+    <Modal open={open} onClose={onClose} title={t('deleteModal.title')}>
       <p>"{todoTitle}"</p>
-      <p>이 작업은 되돌릴 수 없습니다.</p>
+      <p>{t('deleteModal.warning')}</p>
       {error && <p role="alert">{error}</p>}
       <div className="delete-confirm-modal__actions">
         <Button type="button" variant="secondary" onClick={onClose} disabled={isDeleting}>
-          취소
+          {t('deleteModal.cancel')}
         </Button>
         <Button type="button" variant="danger" onClick={onConfirm} disabled={isDeleting}>
-          삭제하기
+          {t('deleteModal.confirm')}
         </Button>
       </div>
     </Modal>

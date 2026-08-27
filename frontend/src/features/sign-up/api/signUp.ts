@@ -1,17 +1,12 @@
 import { apiFetch } from '../../../shared/api/httpClient';
 import { logDev } from '../../../shared/lib/logger';
 import type { User } from '../../../entities/user/model/types';
+import type { ApiError } from '../../../shared/lib/apiError';
 
 interface SignUpInput {
   email: string;
   password: string;
   name: string;
-}
-
-interface ApiError {
-  status: number;
-  code: string;
-  message: string;
 }
 
 export async function signUp(input: SignUpInput): Promise<User> {

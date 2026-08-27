@@ -1,11 +1,13 @@
 import type { TodoStatus } from '../model/types';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
+import type { TranslationKey } from '../../../shared/lib/i18n/translations';
 import './StatusBadge.css';
 
-const LABELS: Record<TodoStatus, string> = {
-  NOT_STARTED: '시작전',
-  IN_PROGRESS: '진행중',
-  DONE: '완료',
-  OVERDUE: '지연',
+const LABEL_KEY: Record<TodoStatus, TranslationKey> = {
+  NOT_STARTED: 'status.notStarted',
+  IN_PROGRESS: 'status.inProgress',
+  DONE: 'status.done',
+  OVERDUE: 'status.overdue',
 };
 
 const MODIFIER: Record<TodoStatus, string> = {
@@ -16,5 +18,6 @@ const MODIFIER: Record<TodoStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: TodoStatus }) {
-  return <span className={`status-badge status-badge--${MODIFIER[status]}`}>{LABELS[status]}</span>;
+  const { t } = useLocale();
+  return <span className={`status-badge status-badge--${MODIFIER[status]}`}>{t(LABEL_KEY[status])}</span>;
 }

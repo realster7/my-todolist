@@ -47,9 +47,35 @@
   --shadow-modal: 0 8px 24px rgba(63,58,69,0.16);
 }
 
+/* 다크 모드: <html data-theme="dark">일 때 토큰만 교체. shared/lib/theme.ts가 부트스트랩 시
+   localStorage(없으면 시스템 설정)를 읽어 이 속성을 설정하고, Header의 토글 버튼으로 전환한다. */
+:root[data-theme='dark'] {
+  --color-primary: #9C90F0;
+  --color-primary-hover: #B3A8F5;
+  --color-primary-bg: #35304A;
+  --color-success: #6FC7A6;
+  --color-success-bg: #253D33;
+  --color-danger: #F0A585;
+  --color-danger-bg: #402C24;
+  --color-neutral: #ADA5B8;
+  --color-neutral-bg: #332D3E;
+
+  --color-bg: #1F1B24;
+  --color-bg-subtle: #262130;
+  --color-surface: #2A2433;
+  --color-border: #3A3342;
+  --color-border-subtle: #332D3B;
+  --color-text-primary: #F1ECF7;
+  --color-text-secondary: #B3ABC0;
+
+  --shadow-card: 0 4px 14px rgba(0,0,0,0.35);
+  --shadow-modal: 0 8px 24px rgba(0,0,0,0.5);
+}
+
 body {
   margin: 0;
   background: var(--color-bg);
+  color: var(--color-text-primary);
   font-family: var(--font-family);
 }
 

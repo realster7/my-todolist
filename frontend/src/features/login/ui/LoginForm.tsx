@@ -4,20 +4,13 @@ import { Input } from '../../../shared/ui/Input';
 import { Button } from '../../../shared/ui/Button';
 import { login } from '../api/login';
 import { useAuthStore } from '../../../entities/user/model/authStore';
+import { useLocale } from '../../../shared/lib/i18n/LocaleContext';
+import { isApiError } from '../../../shared/lib/apiError';
 import './LoginForm.css';
-
-interface ApiError {
-  status: number;
-  code: string;
-  message: string;
-}
-
-function isApiError(err: unknown): err is ApiError {
-  return typeof err === 'object' && err !== null && 'status' in err && 'code' in err && 'message' in err;
-}
 
 export function LoginForm() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState<string | undefined>();
@@ -36,7 +29,7 @@ export function LoginForm() {
       if (isApiError(err)) {
         setFormError(err.message);
       } else {
-        setFormError('로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        setFormError(t('login.genericError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -51,24 +44,24 @@ export function LoginForm() {
         </p>
       )}
       <Input
-        label="이메일"
+        label={t('field.email')}
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
       />
       <Input
-        label="비밀번호"
+        label={t('field.password')}
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
       />
       <Button type="submit" disabled={isSubmitting}>
-        로그인
+        {t('login.submit')}
       </Button>
       <p className="login-form__sign-up-link">
-        계정이 없으신가요? <Link to="/signup">회원가입하기</Link>
+        {t('login.noAccount')} <Link to="/signup">{t('login.signUpLink')}</Link>
       </p>
     </form>
   );

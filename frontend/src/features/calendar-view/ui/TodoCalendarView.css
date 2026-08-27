@@ -1,0 +1,143 @@
+.todo-calendar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+.todo-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.todo-calendar__month-label {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-heading);
+  color: var(--color-text-primary);
+  min-width: 10em;
+  text-align: center;
+}
+
+.todo-calendar__nav {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.todo-calendar__nav:hover {
+  background: var(--color-neutral-bg);
+}
+
+.todo-calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.todo-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--color-border-subtle);
+}
+
+.todo-calendar__day {
+  background: var(--color-surface);
+  min-height: 96px;
+  padding: var(--space-1) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.todo-calendar__day--outside {
+  background: var(--color-bg-subtle);
+}
+
+.todo-calendar__day--outside .todo-calendar__day-number {
+  color: var(--color-text-secondary);
+}
+
+.todo-calendar__day--today .todo-calendar__day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+.todo-calendar__day-number {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+}
+
+.todo-calendar__day-todos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.todo-calendar__todo {
+  display: block;
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-calendar__todo--not-started {
+  color: var(--color-neutral);
+  background: var(--color-neutral-bg);
+}
+
+.todo-calendar__todo--in-progress {
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.todo-calendar__todo--done {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  text-decoration: line-through;
+}
+
+.todo-calendar__todo--overdue {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.todo-calendar__more {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding: 0 4px;
+}
+
+@media (max-width: 767px) {
+  .todo-calendar__day {
+    min-height: 64px;
+  }
+
+  .todo-calendar__todo {
+    font-size: 10px;
+  }
+}

@@ -1,4 +1,3 @@
-// TODO(BE-11): next(err) 패턴으로 리팩터링 예정
 const jwtUtil = require('../utils/jwt');
 
 function authMiddleware(req, res, next) {

@@ -1,6 +1,7 @@
 import { apiFetch } from '../../../shared/api/httpClient';
 import { logDev } from '../../../shared/lib/logger';
 import type { User } from '../../../entities/user/model/types';
+import type { ApiError } from '../../../shared/lib/apiError';
 
 interface LoginInput {
   email: string;
@@ -10,12 +11,6 @@ interface LoginInput {
 interface LoginResult {
   accessToken: string;
   user: User;
-}
-
-interface ApiError {
-  status: number;
-  code: string;
-  message: string;
 }
 
 export async function login(input: LoginInput): Promise<LoginResult> {

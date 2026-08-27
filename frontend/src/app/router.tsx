@@ -1,20 +1,23 @@
 import { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { SignUpPage } from '../pages/sign-up/ui/SignUpPage';
 import { LoginPage } from '../pages/login/ui/LoginPage';
 import { TodoListPage } from '../pages/todo-list/ui/TodoListPage';
 import { TodoFormPage } from '../pages/todo-form/ui/TodoFormPage';
+import { ProfilePage } from '../pages/profile/ui/ProfilePage';
 import { useAuthStore } from '../entities/user/model/authStore';
-import { setAccessToken } from '../shared/api/httpClient';
+import { setAccessToken, API_BASE_URL } from '../shared/api/httpClient';
 import { logDev } from '../shared/lib/logger';
 import { ProtectedRoute } from '../shared/ui/ProtectedRoute';
 
 const router = createBrowserRouter([
+  { path: '/', element: <Navigate to="/todos" replace /> },
   { path: '/signup', element: <SignUpPage /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/todos', element: <ProtectedRoute><TodoListPage /></ProtectedRoute> },
   { path: '/todos/new', element: <ProtectedRoute><TodoFormPage /></ProtectedRoute> },
   { path: '/todos/:id/edit', element: <ProtectedRoute><TodoFormPage /></ProtectedRoute> },
+  { path: '/profile', element: <ProtectedRoute><ProfilePage /></ProtectedRoute> },
 ]);
 
 export function AppRouter() {
@@ -25,7 +28,7 @@ export function AppRouter() {
     const { user, accessToken } = useAuthStore.getState();
     if (!user || accessToken) return;
 
-    fetch(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000'}/auth/refresh`, {
+    fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
     })

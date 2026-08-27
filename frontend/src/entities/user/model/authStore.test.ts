@@ -44,4 +44,12 @@ describe('authStore', () => {
     useAuthStore.getState().logout();
     expect(getAccessToken()).toBeNull();
   });
+
+  it('updateUser 호출 시 user만 갱신되고 accessToken은 유지된다', () => {
+    useAuthStore.getState().login('token-5', dummyUser);
+    const updated = { ...dummyUser, name: '변경된이름' };
+    useAuthStore.getState().updateUser(updated);
+    expect(useAuthStore.getState().user).toEqual(updated);
+    expect(useAuthStore.getState().accessToken).toBe('token-5');
+  });
 });

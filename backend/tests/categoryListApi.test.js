@@ -28,7 +28,7 @@ test.before(async () => {
   });
 
   userA = await authService.signup(EMAIL_A, PASSWORD, '카테고리A');
-  await categoryQueries.createCategory(pool, { userId: userA.id, name: '업무' });
+  await categoryQueries.createCategory(pool, { userId: userA.id, name: '취미' });
 
   userB = await authService.signup(EMAIL_B, PASSWORD, '카테고리B');
 
@@ -41,7 +41,7 @@ test.after(async () => {
   await pool.query("DELETE FROM users WHERE email LIKE 'be06-api-%@example.com'");
 });
 
-test('GET /categories with user A token returns 200 with default + custom categories', async () => {
+test('GET /categories with user A token returns 200 with preset + custom categories', async () => {
   const res = await fetch(`${baseUrl}/categories`, {
     headers: { Authorization: `Bearer ${tokenA}` },
   });
@@ -49,7 +49,7 @@ test('GET /categories with user A token returns 200 with default + custom catego
   assert.strictEqual(res.status, 200);
   const body = await res.json();
   assert.ok(Array.isArray(body));
-  assert.strictEqual(body.length, 2);
+  assert.strictEqual(body.length, 5);
 
   for (const category of body) {
     assert.ok(category.id);
@@ -61,9 +61,12 @@ test('GET /categories with user A token returns 200 with default + custom catego
   const names = body.map((c) => c.name);
   assert.ok(names.includes('기본'));
   assert.ok(names.includes('업무'));
+  assert.ok(names.includes('개인'));
+  assert.ok(names.includes('학습'));
+  assert.ok(names.includes('취미'));
 });
 
-test('GET /categories with user B token returns only own default category (BR-02 ownership)', async () => {
+test('GET /categories with user B token returns only own preset categories (BR-02 ownership)', async () => {
   const res = await fetch(`${baseUrl}/categories`, {
     headers: { Authorization: `Bearer ${tokenB}` },
   });
@@ -71,12 +74,13 @@ test('GET /categories with user B token returns only own default category (BR-02
   assert.strictEqual(res.status, 200);
   const body = await res.json();
   assert.ok(Array.isArray(body));
-  assert.strictEqual(body.length, 1);
-  assert.strictEqual(body[0].userId, userB.id);
+  assert.strictEqual(body.length, 4);
+  assert.ok(body.every((c) => c.userId === userB.id));
   assert.strictEqual(body[0].name, '기본');
 
   const names = body.map((c) => c.name);
-  assert.ok(!names.includes('업무'));
+  assert.deepStrictEqual(names, ['기본', '업무', '개인', '학습']);
+  assert.ok(!names.includes('취미'));
 });
 
 test('GET /categories without Authorization header returns 401', async () => {

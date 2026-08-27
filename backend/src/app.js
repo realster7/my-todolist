@@ -8,6 +8,7 @@ const pool = require('./db/pool');
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const todoRoutes = require('./routes/todoRoutes');
+const userRoutes = require('./routes/userRoutes');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -27,6 +28,7 @@ app.get('/health', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/todos', todoRoutes);
+app.use('/users', userRoutes);
 
 // 개발 환경에서만 Swagger UI 노출 (운영에서는 API 명세를 외부에 공개하지 않음)
 if (config.nodeEnv !== 'production') {

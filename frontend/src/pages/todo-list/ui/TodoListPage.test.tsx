@@ -92,7 +92,7 @@ describe('TodoListPage', () => {
     await screen.findByText('알고리즘 과제');
     await screen.findByText('업무');
 
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'c2' } });
+    fireEvent.change(screen.getByRole('combobox', { name: '카테고리' }), { target: { value: 'c2' } });
 
     await waitFor(() => {
       const last = todoCalls(fetchMock).at(-1);
@@ -124,6 +124,21 @@ describe('TodoListPage', () => {
     expect(
       await screen.findByText('등록된 할일이 없습니다. 새 할일을 추가해 보세요.'),
     ).toBeInTheDocument();
+  });
+
+  it('캘린더 보기로 전환하면 목록 대신 달력이 보이고, 목록으로 다시 전환할 수 있다', async () => {
+    loginState();
+    stubFetch();
+
+    renderPage();
+    await screen.findByText('알고리즘 과제');
+
+    fireEvent.click(screen.getByRole('button', { name: '캘린더' }));
+    expect(screen.getByRole('button', { name: '다음 달' })).toBeInTheDocument();
+    expect(screen.queryByText('2026-09-01 ~ 2026-09-07')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '목록' }));
+    expect(await screen.findByText('알고리즘 과제')).toBeInTheDocument();
   });
 
   it('로그아웃 클릭 시 로그인 화면으로 전환되고 accessToken이 null이 된다', async () => {

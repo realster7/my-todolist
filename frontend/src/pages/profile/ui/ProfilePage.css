@@ -1,0 +1,27 @@
+.profile-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+.profile-page__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+}
+
+.profile-page__title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-heading);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+@media (max-width: 767px) {
+  .profile-page {
+    padding: var(--space-4);
+  }
+}

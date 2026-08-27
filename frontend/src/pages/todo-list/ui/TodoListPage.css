@@ -7,8 +7,28 @@
   gap: var(--space-4);
 }
 
+.todo-list-page__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.todo-list-page__greeting {
+  font-family: var(--font-family-display);
+  font-size: 26px;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.todo-list-page__summary {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+}
+
 .todo-list-page__add-button {
-  align-self: flex-end;
+  flex-shrink: 0;
   height: 40px;
   display: inline-flex;
   align-items: center;
@@ -34,14 +54,55 @@
   gap: var(--space-3);
 }
 
+.todo-list-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.todo-list-page__view-toggle {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.todo-list-page__view-toggle button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.todo-list-page__view-toggle button.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
 @media (max-width: 767px) {
   .todo-list-page {
     padding: var(--space-4);
   }
 
+  .todo-list-page__top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .todo-list-page__add-button {
-    align-self: stretch;
     justify-content: center;
     height: 44px;
+  }
+
+  .todo-list-page__view-toggle {
+    align-self: flex-end;
   }
 }

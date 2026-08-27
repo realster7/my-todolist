@@ -8,6 +8,8 @@
 | 0.2.0 | 2026-08-26 | Daniel Kim | 프론트엔드 디렉토리 구조를 타입별(api/stores/hooks/components/pages) 구조에서 FSD(Feature-Sliced Design) 구조로 변경 |
 | 0.3.0 | 2026-08-26 | Daniel Kim | 마이그레이션 실행 스크립트(migrate.js)/시드 데이터(seed.js)/커넥션 풀 소규모 측정(loadtest.js)을 백엔드 구조에 반영, 4.2·5.4절 트레이드오프 서술 조정 |
 | 0.4.0 | 2026-08-27 | Daniel Kim | 실제 구현(BE-01~12)과 정합성 맞춤: 테스트 도구를 Jest/supertest 서술에서 Node 내장 `node:test`로 정정, 커버리지 측정 도구 생략 문구 삭제(실제 `--experimental-test-coverage` 사용), 환경변수 목록에 `NODE_ENV`/`CORS_ORIGIN` 추가, 5.6절(Swagger UI, 개발환경 전용) 신설, `middlewares/auth.js`→`authMiddleware.js` 오탈자 수정, 7장 `utils/`·`tests/` 트리를 실제 파일 목록으로 갱신 |
+| 0.5.0 | 2026-08-27 | Daniel Kim | 6장 프론트엔드 구조에 `features/calendar-view`(UC-10) 추가 |
+| 0.6.0 | 2026-08-27 | Daniel Kim | 실제 구현과 재정합: 7장에 `userController/userService/userRoutes`(UC-03) 및 `userUpdateApi.test.js` 추가, 6장에 `features/edit-profile`·`shared/lib/{apiError,theme,i18n}` 추가, `profile` 페이지 주석의 "P2 여유시" 문구 정정(구현 완료), 5.1절에 프론트엔드 환경변수(`VITE_API_BASE_URL`) 절 신설 |
 
 ---
 
@@ -124,9 +126,11 @@
 
 ### 5.1 환경변수
 
-- `.env` 파일(커밋 금지, `.gitignore` 등록)로 관리: `NODE_ENV`(기본 `development`), `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES_IN`(예: 15m), `JWT_REFRESH_EXPIRES_IN`(예: 7d), `PORT`, `CORS_ORIGIN`(쉼표구분 허용 origin 목록, 미설정 시 전체 허용으로 폴백).
-- `.env.example`에 키 목록만 값 없이 커밋해 온보딩 참고용으로 둔다.
-- 별도의 설정 관리 서비스(Vault 등)는 도입하지 않는다 — 1인 개발 규모에 과함.
+**백엔드** — `.env` 파일(커밋 금지, `.gitignore` 등록)로 관리: `NODE_ENV`(기본 `development`), `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES_IN`(예: 15m), `JWT_REFRESH_EXPIRES_IN`(예: 7d), `PORT`, `CORS_ORIGIN`(쉼표구분 허용 origin 목록, 미설정 시 전체 허용으로 폴백).
+
+**프론트엔드** — Vite 규칙에 따라 `VITE_` 접두사 필요. `.env`(커밋 금지)로 관리: `VITE_API_BASE_URL`(백엔드 API 서버 주소, 미설정 시 `shared/api/httpClient.ts`가 `http://localhost:3000`으로 폴백). 값 변경 후에는 개발 서버 재시작이 필요(Vite가 서버 기동 시점에만 `.env`를 읽음).
+
+두 앱 모두 `.env.example`에 키 목록만 값 없이 커밋해 온보딩 참고용으로 둔다. 별도의 설정 관리 서비스(Vault 등)는 도입하지 않는다 — 1인 개발 규모에 과함.
 
 ### 5.2 JWT 시크릿
 
@@ -172,7 +176,7 @@ frontend/
 │   │   ├── login/ui/LoginPage.tsx              # UC-02
 │   │   ├── todo-list/ui/TodoListPage.tsx       # UC-05/06
 │   │   ├── todo-form/ui/TodoFormPage.tsx       # UC-04/07 (등록/편집 폼 재사용)
-│   │   └── profile/ui/ProfilePage.tsx          # UC-03 (P2, 여유 시)
+│   │   └── profile/ui/ProfilePage.tsx          # UC-03
 │   │
 │   ├── features/                       # 사용자 행동 단위
 │   │   ├── sign-up/
@@ -189,9 +193,14 @@ frontend/
 │   │   ├── delete-todo/
 │   │   │   ├── ui/DeleteConfirmModal.tsx
 │   │   │   └── api/deleteTodo.ts            # UC-08
-│   │   └── filter-todos/
-│   │       ├── ui/TodoFilterBar.tsx
-│   │       └── model/useTodoFilter.ts       # UC-06 (필터 상태)
+│   │   ├── filter-todos/
+│   │   │   ├── ui/TodoFilterBar.tsx
+│   │   │   └── model/useTodoFilter.ts       # UC-06 (필터 상태)
+│   │   ├── calendar-view/
+│   │   │   └── ui/TodoCalendarView.tsx      # UC-10, 신규 API 없이 목록 조회 데이터 재사용
+│   │   └── edit-profile/
+│   │       ├── ui/EditProfileForm.tsx       # UC-03
+│   │       └── api/updateProfile.ts         # PATCH /users/me
 │   │
 │   ├── entities/                        # 도메인 모델 단위
 │   │   ├── user/
@@ -209,9 +218,13 @@ frontend/
 │   │       └── ui/CategoryBadge.tsx, CategorySelect.tsx
 │   │
 │   └── shared/                           # 도메인 무관 공통
-│       ├── ui/Button.tsx, Input.tsx, Modal.tsx, Header.tsx
+│       ├── ui/Button.tsx, Input.tsx, Modal.tsx, Header.tsx, ProtectedRoute.tsx
 │       ├── api/httpClient.ts              # fetch 래퍼, 인증 헤더 부착, 401 시 토큰 재발급 훅
 │       └── lib/
+│           ├── logger.ts                  # 개발모드 전용 콘솔 로깅
+│           ├── apiError.ts                # ApiError 타입/isApiError 가드 (모든 features/api에서 공용)
+│           ├── theme.ts                   # 라이트/다크 모드 저장·적용
+│           └── i18n/                      # ko/en/ja/zh 번역 사전, LocaleContext(useLocale)
 │
 ├── index.html
 └── package.json
@@ -232,19 +245,22 @@ backend/
 │   ├── routes/                  # URL-핸들러 매핑 + 인증 미들웨어 연결
 │   │   ├── authRoutes.js        # UC-01/02, 토큰 재발급
 │   │   ├── todoRoutes.js        # UC-04/05/06/07/08
-│   │   └── categoryRoutes.js    # UC-09
+│   │   ├── categoryRoutes.js    # UC-09
+│   │   └── userRoutes.js        # UC-03 (PATCH /users/me)
 │   ├── controllers/               # req/res 처리, 입력 1차 검증
 │   │   ├── authController.js
 │   │   ├── todoController.js
-│   │   └── categoryController.js
+│   │   ├── categoryController.js
+│   │   └── userController.js
 │   ├── services/                    # 비즈니스 규칙(BR-01~07) 적용
 │   │   ├── authService.js           # 비밀번호 해시, JWT 발급/검증(BR-03)
 │   │   ├── todoService.js           # BR-04/05/06/07, 소유권 조건 적용(BR-02)
-│   │   └── categoryService.js       # BR-04 기본 카테고리 자동 생성
+│   │   ├── categoryService.js       # BR-04 기본 카테고리 자동 생성(프리셋 4종: 기본/업무/개인/학습)
+│   │   └── userService.js           # UC-03 name/password 부분 수정
 │   ├── db/
 │   │   ├── pool.js                   # pg.Pool 단일 인스턴스
 │   │   ├── queries/                   # 순수 SQL 실행 함수 (ORM 미사용)
-│   │   │   ├── userQueries.js
+│   │   │   ├── userQueries.js         # updateUser 포함(UC-03)
 │   │   │   ├── todoQueries.js
 │   │   │   └── categoryQueries.js
 │   │   ├── migrations/                # SQL 마이그레이션 파일 (번호순, 프레임워크 없이 직접 관리)
@@ -272,7 +288,8 @@ backend/
 │   ├── categoryListApi.test.js                                       # BE-06
 │   ├── computeTodoStatus.test.js, todoCreateApi.test.js,
 │   │   todoListApi.test.js, todoUpdateApi.test.js, todoDeleteApi.test.js  # BE-07~10
-│   └── app.test.js, errorHandler.test.js                              # BE-11
+│   ├── app.test.js, errorHandler.test.js                              # BE-11
+│   └── userUpdateApi.test.js                                           # BE-13
 ├── .env.example
 └── package.json
 ```
