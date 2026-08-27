@@ -1,0 +1,37 @@
+.app-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.app-header__logo {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.app-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.app-header__link {
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.app-header__link:hover {
+  color: var(--color-primary);
+}

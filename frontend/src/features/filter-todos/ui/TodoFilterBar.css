@@ -1,0 +1,62 @@
+.todo-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.todo-filter-bar__category {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
+.todo-filter-bar__category select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+}
+
+.todo-filter-bar__status-group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.todo-filter-bar__status-group button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.todo-filter-bar__status-group button.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+/* 모바일에서는 wireframe의 드롭다운 축소 대신 flex-wrap으로 필터 버튼을 줄바꿈한다.
+   버튼 개수가 5개로 적어 스크롤 없이도 접히는(줄바꿈되는) 형태로 충분히 목록에 접근 가능하므로,
+   별도 드롭다운 컴포넌트를 추가하지 않는다(오버엔지니어링 방지). */
+@media (max-width: 767px) {
+  .todo-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .todo-filter-bar__status-group {
+    flex-wrap: wrap;
+  }
+}

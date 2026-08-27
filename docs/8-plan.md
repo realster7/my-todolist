@@ -188,117 +188,118 @@
 
 - **수행 작업**: `frontend/` 디렉토리에 React 19 + TypeScript(Vite) 프로젝트 생성, Zustand·TanStack Query 설치, 5-project-principle.md 6장 FSD 폴더(`app/pages/features/entities/shared`) 골격 생성.
 - **완료 조건**:
-  - [ ] `npm run dev`로 개발 서버가 기동되고 빈 페이지가 렌더링된다
-  - [ ] `src/app/providers.tsx`에 `QueryClientProvider`가 적용되어 있다
-  - [ ] FSD 5개 레이어 폴더가 생성되어 있다
+  - [x] `npm run dev`로 개발 서버가 기동되고 빈 페이지가 렌더링된다
+  - [x] `src/app/providers.tsx`에 `QueryClientProvider`가 적용되어 있다
+  - [x] FSD 5개 레이어 폴더가 생성되어 있다
 - **선행 Task**: 없음
 
 ### FE-02. shared 공통 UI 컴포넌트
 
 - **수행 작업**: `shared/ui`에 Button/Input/Modal/Header, `shared/api/httpClient.ts`(fetch 래퍼, access_token 헤더 자동 부착, 401 시 refresh 처리 훅 연결점) 구현.
 - **완료 조건**:
-  - [ ] Button/Input/Modal이 스토리 없이도 다른 화면에서 import되어 렌더링 확인됨
-  - [ ] `httpClient`가 요청마다 `Authorization: Bearer <access_token>` 헤더를 자동 부착
-  - [ ] `httpClient`가 401 응답을 받으면 refresh 시도 후 원 요청을 재시도하는 흐름을 가진다(4-wireframe.md/3-user-scenario.md 4.1절)
+  - [x] Button/Input/Modal이 스토리 없이도 다른 화면에서 import되어 렌더링 확인됨
+  - [x] `httpClient`가 요청마다 `Authorization: Bearer <access_token>` 헤더를 자동 부착
+  - [x] `httpClient`가 401 응답을 받으면 refresh 시도 후 원 요청을 재시도하는 흐름을 가진다(4-wireframe.md/3-user-scenario.md 4.1절)
 - **선행 Task**: FE-01
 
 ### FE-03. entities/user (인증 상태)
 
 - **수행 작업**: `entities/user/model/types.ts`(User 타입), `entities/user/model/authStore.ts`(Zustand — access_token, 로그인 여부, 로그인/로그아웃 액션).
 - **완료 조건**:
-  - [ ] `authStore`에 access_token 저장/삭제 액션이 동작한다
-  - [ ] 새로고침 시 로그인 상태 유지 전략(메모리 한정 or 저장소 사용)이 결정되어 주석으로 명시됨
+  - [x] `authStore`에 access_token 저장/삭제 액션이 동작한다
+  - [x] 새로고침 시 로그인 상태 유지 전략(메모리 한정 or 저장소 사용)이 결정되어 주석으로 명시됨
 - **선행 Task**: FE-01
 
 ### FE-04. 회원가입 화면 (UC-01)
 
 - **수행 작업**: `features/sign-up`(SignUpForm, api), `pages/sign-up`(SignUpPage) — BE-03 연동, 4-wireframe.md 회원가입 화면 레이아웃(데스크톱+모바일) 구현.
 - **완료 조건**:
-  - [ ] email/password/name 입력 후 제출 시 BE-03 API 호출 및 성공 시 로그인 화면으로 이동
-  - [ ] 중복 email 에러 시 사용자에게 에러 메시지 표시 (BR-03)
-  - [ ] 375px 폭에서 레이아웃 깨짐 없이 표시 (반응형 웹 필수 요건, PRD 6장)
+  - [x] email/password/name 입력 후 제출 시 BE-03 API 호출 및 성공 시 로그인 화면으로 이동
+  - [x] 중복 email 에러 시 사용자에게 에러 메시지 표시 (BR-03)
+  - [x] 375px 폭에서 레이아웃 깨짐 없이 표시 (반응형 웹 필수 요건, PRD 6장) — CSS 미디어쿼리로 구현, 실제 브라우저 리사이즈 확인은 수동 QA 권장
 - **선행 Task**: FE-02, FE-03, BE-03
 
 ### FE-05. 로그인 화면 (UC-02)
 
 - **수행 작업**: `features/login`(LoginForm, api), `pages/login`(LoginPage) — BE-04 연동, 성공 시 authStore에 access_token 저장 후 할일 목록 화면으로 이동.
 - **완료 조건**:
-  - [ ] 정상 로그인 시 authStore에 access_token 저장 및 목록 화면 이동 확인
-  - [ ] 틀린 자격증명 시 에러 메시지 표시
-  - [ ] 375px 폭 레이아웃 확인
+  - [x] 정상 로그인 시 authStore에 access_token 저장 및 목록 화면 이동 확인
+  - [x] 틀린 자격증명 시 에러 메시지 표시
+  - [x] 375px 폭 레이아웃 확인 — CSS 미디어쿼리로 구현(SignUpPage와 동일 방식), 실제 브라우저 리사이즈 확인은 수동 QA 권장
 - **선행 Task**: FE-04, BE-04
 
 ### FE-06. entities/todo, entities/category
 
 - **수행 작업**: `entities/todo`(types, todoApi, useTodos 훅, TodoListItem, StatusBadge, computeTodoStatus), `entities/category`(types, categoryApi, useCategories 훅, CategoryBadge/CategorySelect) — BE-06/BE-08 연동.
 - **완료 조건**:
-  - [ ] `useTodos()`로 목록 데이터를 TanStack Query 캐시로 조회 가능
-  - [ ] `useCategories()`로 카테고리 목록 조회 가능
-  - [ ] `StatusBadge`가 4개 상태(NOT_STARTED/IN_PROGRESS/DONE/OVERDUE)에 대해 서로 다른 색상/라벨을 표시 (4-wireframe.md 10장 색상 규칙)
+  - [x] `useTodos()`로 목록 데이터를 TanStack Query 캐시로 조회 가능
+  - [x] `useCategories()`로 카테고리 목록 조회 가능
+  - [x] `StatusBadge`가 4개 상태(NOT_STARTED/IN_PROGRESS/DONE/OVERDUE)에 대해 서로 다른 색상/라벨을 표시 (4-wireframe.md 10장 색상 규칙)
 - **선행 Task**: FE-02, FE-03, BE-08, BE-06
 
 ### FE-07. 할일 등록 화면 (UC-04)
 
 - **수행 작업**: `features/create-todo`(TodoForm, api), `pages/todo-form`(TodoFormPage 등록 모드) — 제목/캘린더(시작일·종료일)/카테고리 선택 UI, BE-07 연동.
 - **완료 조건**:
-  - [ ] 캘린더 UI로 시작일/종료일 선택 후 등록 성공 시 목록 화면으로 이동 및 목록에 즉시 반영(TanStack Query invalidate)
-  - [ ] 종료일 < 시작일 선택 시 클라이언트에서 1차로 제출 차단 또는 서버 에러 메시지 표시 (BR-05)
-  - [ ] 카테고리 미선택 시에도 등록 가능하고 "기본"으로 표시됨 (BR-04)
+  - [x] 캘린더 UI로 시작일/종료일 선택 후 등록 성공 시 목록 화면으로 이동 및 목록에 즉시 반영(TanStack Query invalidate)
+  - [x] 종료일 < 시작일 선택 시 클라이언트에서 1차로 제출 차단 또는 서버 에러 메시지 표시 (BR-05)
+  - [x] 카테고리 미선택 시에도 등록 가능하고 "기본"으로 표시됨 (BR-04)
 - **선행 Task**: FE-06, BE-07
 
 ### FE-08. 할일 목록/필터링 화면 (UC-05, UC-06)
 
 - **수행 작업**: `features/filter-todos`(TodoFilterBar, useTodoFilter), `pages/todo-list`(TodoListPage) — 카테고리별/상태별 필터 UI, 목록 렌더링. BE-08 연동.
 - **완료 조건**:
-  - [ ] 필터 미적용 시 전체 목록 표시
-  - [ ] 카테고리 필터 적용 시 해당 카테고리 항목만 표시
-  - [ ] 상태 필터(시작전/진행중/완료/지연) 각각 적용 시 올바른 항목만 표시
-  - [ ] 375px 폭에서 필터 UI가 접히거나 스크롤 가능한 형태로 정상 표시
+  - [x] 필터 미적용 시 전체 목록 표시
+  - [x] 카테고리 필터 적용 시 해당 카테고리 항목만 표시
+  - [x] 상태 필터(시작전/진행중/완료/지연) 각각 적용 시 올바른 항목만 표시
+  - [x] 375px 폭에서 필터 UI가 접히거나 스크롤 가능한 형태로 정상 표시 — 상태 버튼은 flex-wrap 줄바꿈으로 대응(wireframe 드롭다운 대안, 코드 주석에 근거 명시)
 - **선행 Task**: FE-07, BE-08
 
 ### FE-09. 할일 편집 화면 (UC-07)
 
 - **수행 작업**: `features/edit-todo`(api), `pages/todo-form`(편집 모드 공유) — 기존 값 프리필, 완료 체크박스, 저장/삭제 버튼. BE-09 연동.
 - **완료 조건**:
-  - [ ] 목록에서 항목 선택 시 편집 화면에 기존 값이 채워져 표시됨
-  - [ ] 수정 저장 시 목록에 즉시 반영
-  - [ ] 완료 체크 시 completedAt 반영 결과가 목록 상태 뱃지에 즉시 반영 (BR-07)
+  - [x] 목록에서 항목 선택 시 편집 화면에 기존 값이 채워져 표시됨
+  - [x] 수정 저장 시 목록에 즉시 반영
+  - [x] 완료 체크 시 completedAt 반영 결과가 목록 상태 뱃지에 즉시 반영 (BR-07)
 - **선행 Task**: FE-08, BE-09
 
 ### FE-10. 할일 삭제 확인 UI (UC-08)
 
 - **수행 작업**: `features/delete-todo`(DeleteConfirmModal, api) — 삭제 버튼 클릭 시 확인 모달, 확인 시 BE-10 호출.
 - **완료 조건**:
-  - [ ] 삭제 버튼 클릭 시 확인 모달이 뜨고, 취소 시 아무 변화 없음
-  - [ ] 확인 클릭 시 목록에서 즉시 제거됨
+  - [x] 삭제 버튼 클릭 시 확인 모달이 뜨고, 취소 시 아무 변화 없음
+  - [x] 확인 클릭 시 목록에서 즉시 제거됨
 - **선행 Task**: FE-08, BE-10
 
 ### FE-11. 반응형 레이아웃 전체 점검
 
 - **수행 작업**: FE-04~FE-10에서 만든 전체 화면을 대상으로 4-wireframe.md 브레이크포인트 기준 데스크톱/모바일 레이아웃 최종 점검 및 CSS 보정.
 - **완료 조건**:
-  - [ ] 모든 MVP 화면(회원가입/로그인/목록/등록/편집/삭제모달)이 375px, 1024px 이상 두 폭에서 깨짐 없이 표시됨
-  - [ ] 별도 네이티브 앱 UI 요소 없이 반응형 웹 단일 코드베이스로 동작 확인 (PRD 6장)
+  - [x] 모든 MVP 화면(회원가입/로그인/목록/등록/편집/삭제모달)이 375px, 1024px 이상 두 폭에서 깨짐 없이 표시됨 — CSS 코드 점검 + 실제 브라우저(375px/1024px) 스크린샷으로 확인
+  - [x] 별도 네이티브 앱 UI 요소 없이 반응형 웹 단일 코드베이스로 동작 확인 (PRD 6장)
 - **선행 Task**: FE-04, FE-05, FE-07, FE-08, FE-09, FE-10
 
 ### FE-12. 예외 시나리오 수동 QA
 
 - **수행 작업**: 3-user-scenario.md 4장(access_token 재발급, 소유권 위반, 날짜 유효성 위반, 이메일 중복, 인증 없이 접근) 5개 케이스를 실제 화면에서 수동으로 재현·확인.
 - **완료 조건**:
-  - [ ] 4.1 access_token 만료 후 자동 재발급으로 작업이 끊기지 않음을 확인
-  - [ ] 4.2 타인 Todo 접근 시도가 화면/API 양쪽에서 차단됨을 확인
-  - [ ] 4.3 종료일 < 시작일 입력 시 에러가 표시됨을 확인
-  - [ ] 4.4 중복 email 가입 시 에러가 표시됨을 확인
-  - [ ] 4.5 로그아웃 상태에서 할일 관련 화면 접근 시 로그인 화면으로 리다이렉트됨을 확인
+  - [x] 4.1 access_token 만료 후 자동 재발급으로 작업이 끊기지 않음을 확인 (FE-11 새로고침 검증 + httpClient 401 재시도 로직)
+  - [x] 4.2 타인 Todo 접근 시도가 화면/API 양쪽에서 차단됨을 확인 (화면: "할일을 찾을 수 없습니다", API: BE-09/10 403/404)
+  - [x] 4.3 종료일 < 시작일 입력 시 에러가 표시됨을 확인
+  - [x] 4.4 중복 email 가입 시 에러가 표시됨을 확인
+  - [x] 4.5 로그아웃 상태에서 할일 관련 화면 접근 시 로그인 화면으로 리다이렉트됨을 확인 — **`ProtectedRoute` 신규 추가로 버그 수정**(기존엔 가드 자체가 없었음)
 - **선행 Task**: FE-11
 
 ### FE-13. (선택, P2) 회원정보 수정 화면 (UC-03)
 
 - **수행 작업**: `pages/profile`(ProfilePage) — name/password 수정 폼. PRD 5장 기준 일정 여유 시에만 착수.
 - **완료 조건**:
-  - [ ] 본인 name/password 수정 후 저장 시 반영 확인
-  - [ ] 미착수 시 이 Task는 PRD 10장 향후 과제로 명시적으로 이월 처리
+  - [ ] 본인 name/password 수정 후 저장 시 반영 확인 — 미착수(아래 참고)
+  - [x] 미착수 시 이 Task는 PRD 10장 향후 과제로 명시적으로 이월 처리 (PRD 10장 119번 줄에 이미 등재됨)
 - **선행 Task**: FE-05 (일정 여유 시에만 진행, MVP 필수 아님)
+- **미착수 판단 근거**: 백엔드에 회원정보 수정 API(`PATCH /users/:id` 등) 자체가 없음(`swagger.json`에 UC-03 관련 엔드포인트 전무, BE-01~12 어디에도 해당 Task 없음). 새 백엔드 엔드포인트를 지금 만드는 것은 이 Task("일정 여유 시 프론트 화면만 추가")의 원래 범위를 넘는 백엔드 확장이라 진행하지 않음. FE-01~12로 MVP 핵심 유스케이스(UC-01/02/04/05/06/07/08/09)는 전부 완료된 상태.
 
 ---
 

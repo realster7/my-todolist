@@ -5,6 +5,7 @@
 | 버전  | 날짜       | 작성자     | 변경 내용     |
 | ----- | ---------- | ---------- | -------------- |
 | 0.1.0 | 2026-08-27 | Daniel Kim | 최초 초안 작성 (참고 이미지: 캘린더 앱 스크린샷 분석) |
+| 0.2.0 | 2026-08-27 | Daniel Kim | "소프트 파스텔 카드형" 방향으로 팔레트/타이포그래피 교체 (디자인 시안 D안 채택) |
 
 ---
 
@@ -20,32 +21,34 @@
 
 ## 2. 컬러 팔레트
 
+**0.2.0 변경**: 디자인 시안(A. 기존 유지 / B. 볼드 칸반 / C. 조밀한 테이블형 / D. 소프트 파스텔 카드형) 중 D안을 채택해 팔레트를 교체했다. 아래 값이 최신이며, 상태 뱃지 색상 매핑 원칙(4-wireframe.md 10.2절)은 그대로 승계한다.
+
 ### 2.1 브랜드/상태 색상 (4-wireframe.md 10.2절과 매핑)
 
 | 토큰 | 값 | 용도 |
 | --- | --- | --- |
-| `--color-primary` | `#1A73E8` | 주요 액션 버튼, 링크, "오늘" 강조, 진행중 상태 |
-| `--color-primary-hover` | `#1558B0` | primary 버튼 hover |
-| `--color-primary-bg` | `#E8F0FE` | primary 연한 배경(선택된 필터, 오늘 셀 배경 등) |
-| `--color-success` | `#0F9D58` | 완료 상태(DONE), 성공 토스트 |
-| `--color-success-bg` | `#E6F4EA` | 완료 뱃지 배경 |
-| `--color-danger` | `#D93025` | 지연 상태(OVERDUE), 삭제 버튼, 에러 메시지 |
-| `--color-danger-bg` | `#FCE8E6` | 지연 뱃지 배경 |
+| `--color-primary` | `#7C6FE0` | 주요 액션 버튼, 링크, 진행중 상태 (라벤더) |
+| `--color-primary-hover` | `#5F51CC` | primary 버튼 hover |
+| `--color-primary-bg` | `#EEEBFB` | primary 연한 배경(선택된 필터, 진행중 뱃지 배경 등) |
+| `--color-success` | `#4FA989` | 완료 상태(DONE), 성공 토스트 (민트) |
+| `--color-success-bg` | `#E4F3EC` | 완료 뱃지 배경 |
+| `--color-danger` | `#E8896A` | 지연 상태(OVERDUE), 삭제 버튼, 에러 메시지 (피치) |
+| `--color-danger-bg` | `#FBEAE2` | 지연 뱃지 배경 |
 | `--color-warning` | `#F29900` | (예비) 경고성 알림 — 이번 MVP에서 필수 사용처 없음 |
-| `--color-neutral` | `#5F6368` | 시작전(NOT_STARTED) 상태, 보조 텍스트 |
-| `--color-neutral-bg` | `#F1F3F4` | 시작전 뱃지 배경, 카테고리 뱃지 배경(10.3절) |
+| `--color-neutral` | `#8A8394` | 시작전(NOT_STARTED) 상태, 보조 텍스트 |
+| `--color-neutral-bg` | `#F1EDF7` | 시작전 뱃지 배경, 카테고리 뱃지 배경(10.3절) |
 
 ### 2.2 기본 UI 색상
 
 | 토큰 | 값 | 용도 |
 | --- | --- | --- |
-| `--color-bg` | `#FFFFFF` | 페이지 배경 |
-| `--color-bg-subtle` | `#F8F9FA` | 사이드바/보조 영역 배경 |
+| `--color-bg` | `#FBF6F0` | 페이지 배경 (웜 크림) |
+| `--color-bg-subtle` | `#F5EFE7` | 보조 영역 배경 |
 | `--color-surface` | `#FFFFFF` | 카드/모달 표면 |
-| `--color-border` | `#DADCE0` | 그리드 라인, 인풋/카드 테두리 |
-| `--color-border-subtle` | `#E8EAED` | 옅은 구분선 |
-| `--color-text-primary` | `#202124` | 본문/헤딩 텍스트 |
-| `--color-text-secondary` | `#5F6368` | 보조 텍스트, 라벨, placeholder |
+| `--color-border` | `#EAE4F0` | 인풋/카드 테두리 |
+| `--color-border-subtle` | `#F0EBE4` | 옅은 구분선 |
+| `--color-text-primary` | `#3F3A45` | 본문/헤딩 텍스트 |
+| `--color-text-secondary` | `#8A8394` | 보조 텍스트, 라벨, placeholder |
 | `--color-text-on-primary` | `#FFFFFF` | primary/성공/위험 배경 위 텍스트 |
 
 **상태 뱃지 색상 최종 매핑** (도메인정의서 5장 상태 판별 로직은 재정의하지 않음):
@@ -63,12 +66,15 @@
 
 ## 3. 타이포그래피
 
-참고 이미지는 시스템 산세리프(Google Sans/Roboto 계열)를 사용한다. 웹폰트 추가 설치 없이 시스템 폰트 스택으로 동일한 느낌을 낸다(YAGNI — 별도 폰트 로딩 비용 없음).
+D안 채택으로 본문은 Nunito Sans(웹폰트), 헤딩/로고는 Fraunces(세리프 디스플레이 서체)를 사용해 따뜻하고 친근한 톤을 낸다. 두 폰트 모두 Google Fonts에서 로드(`index.html`에 `<link>` 추가, 별도 라이브러리 설치 없음).
 
 ```css
---font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-  "Noto Sans KR", Helvetica, Arial, sans-serif;
+--font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  Roboto, "Noto Sans KR", Helvetica, Arial, sans-serif;
+--font-family-display: "Fraunces", Georgia, "Noto Serif KR", serif;
 ```
+
+`--font-family-display`는 헤더 로고 등 소수의 헤딩 요소에만 사용하고(3장 3절 규칙과 동일하게 남용하지 않음), 본문/폼/뱃지 등 나머지 전체는 `--font-family`를 그대로 사용한다.
 
 | 토큰 | 크기 | 굵기 | 용도 |
 | --- | --- | --- | --- |
@@ -92,12 +98,12 @@
 --space-5: 24px;
 --space-6: 32px;
 
---radius-sm: 4px;   /* 인풋, 카테고리 뱃지 */
---radius-md: 8px;   /* 카드, 모달, 버튼 */
---radius-full: 999px; /* 상태 뱃지(필 형태), "오늘" 원형 표시 */
+--radius-sm: 6px;   /* 인풋, 카테고리 뱃지 */
+--radius-md: 14px;  /* 카드, 모달, 버튼 */
+--radius-full: 999px; /* 상태 뱃지·필터 버튼(필 형태) */
 
---shadow-card: 0 1px 2px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.08);
---shadow-modal: 0 4px 16px rgba(0,0,0,0.16);
+--shadow-card: 0 4px 14px rgba(124,111,224,0.10);
+--shadow-modal: 0 8px 24px rgba(63,58,69,0.16);
 ```
 
 ---

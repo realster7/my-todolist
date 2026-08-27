@@ -28,3 +28,7 @@ Thumbs.db
 # Cache
 .cache/
 .vite/
+
+# QA/디버그 산출물 (커밋 대상 아님)
+.playwright-mcp/
+*.png
