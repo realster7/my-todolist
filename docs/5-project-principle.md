@@ -7,6 +7,7 @@
 | 0.1.0 | 2026-08-26 | Daniel Kim | 최초 초안 작성 |
 | 0.2.0 | 2026-08-26 | Daniel Kim | 프론트엔드 디렉토리 구조를 타입별(api/stores/hooks/components/pages) 구조에서 FSD(Feature-Sliced Design) 구조로 변경 |
 | 0.3.0 | 2026-08-26 | Daniel Kim | 마이그레이션 실행 스크립트(migrate.js)/시드 데이터(seed.js)/커넥션 풀 소규모 측정(loadtest.js)을 백엔드 구조에 반영, 4.2·5.4절 트레이드오프 서술 조정 |
+| 0.4.0 | 2026-08-27 | Daniel Kim | 실제 구현(BE-01~12)과 정합성 맞춤: 테스트 도구를 Jest/supertest 서술에서 Node 내장 `node:test`로 정정, 커버리지 측정 도구 생략 문구 삭제(실제 `--experimental-test-coverage` 사용), 환경변수 목록에 `NODE_ENV`/`CORS_ORIGIN` 추가, 5.6절(Swagger UI, 개발환경 전용) 신설, `middlewares/auth.js`→`authMiddleware.js` 오탈자 수정, 7장 `utils/`·`tests/` 트리를 실제 파일 목록으로 갱신 |
 
 ---
 
@@ -108,14 +109,13 @@
 - **BR-07 (completedAt 기록/초기화)**: 완료 처리/취소 시 값 반영.
 - **BR-03 (email 유일성)**: 중복 가입 거부.
 
-이 항목들은 서비스 레이어 함수 단위 테스트(예: Jest)로 작성하고, UC-01/04/05/07/08의 happy path는 최소 1개씩 API 레벨(supertest 등) 통합 테스트로 커버한다.
+이 항목들은 서비스 레이어 함수 단위 테스트(Node 내장 `node:test`)로 작성하고, UC-01/04/05/07/08의 happy path는 최소 1개씩 API 레벨(`app.listen(0)` + Node 전역 `fetch`) 통합 테스트로 커버한다. 별도 테스트 프레임워크(Jest 등)나 HTTP 테스트 라이브러리(supertest 등)는 도입하지 않는다 — Node 24 내장 기능만으로 충분(BE-01~12 실제 구현 시 확정). 목(mock) 없이 실제 로컬 PostgreSQL에 대한 통합 테스트로 검증한다.
 
 ### 4.2 생략하는 것 (2일 일정상 트레이드오프)
 
 - 프론트엔드 컴포넌트 단위 테스트: 생략. 대신 수동 QA로 4장 예외 시나리오(access_token 재발급, 소유권 위반, 날짜 위반, 이메일 중복, 미인증 접근)를 화면에서 직접 확인한다.
 - E2E 테스트(Playwright/Cypress 등): 생략.
 - 부하 테스트(1,000명 동시접속, API/애플리케이션 레벨 실측): PRD 9·10장에 따라 이번 범위에서 생략, 코드 수준 기본기(인덱스, 커넥션 풀)만 반영. 단, DB 커넥션 풀 자체에 대한 소규모 측정은 DB-05로 수행한다(5.4절 참조) — 1,000명 규모 검증을 대체하지는 않는다.
-- 커버리지 수치 측정 도구 설정: 생략.
 - UC-06 필터링, UC-09 카테고리 관리는 별도 자동 테스트 없이 수동 QA로 대체(로직이 단순한 쿼리 조건 조합이므로).
 
 ---
@@ -124,7 +124,7 @@
 
 ### 5.1 환경변수
 
-- `.env` 파일(커밋 금지, `.gitignore` 등록)로 관리: `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES_IN`(예: 15m), `JWT_REFRESH_EXPIRES_IN`(예: 7d), `PORT`.
+- `.env` 파일(커밋 금지, `.gitignore` 등록)로 관리: `NODE_ENV`(기본 `development`), `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `JWT_ACCESS_EXPIRES_IN`(예: 15m), `JWT_REFRESH_EXPIRES_IN`(예: 7d), `PORT`, `CORS_ORIGIN`(쉼표구분 허용 origin 목록, 미설정 시 전체 허용으로 폴백).
 - `.env.example`에 키 목록만 값 없이 커밋해 온보딩 참고용으로 둔다.
 - 별도의 설정 관리 서비스(Vault 등)는 도입하지 않는다 — 1인 개발 규모에 과함.
 
@@ -136,7 +136,7 @@
 
 ### 5.3 BR-01/BR-02 강제 위치
 
-- **BR-01(인증 필수)**: Express 미들웨어(`middlewares/auth.js`)에서 access_token 검증 후 `req.user`에 사용자 정보를 주입. Todo/Category 관련 모든 라우트에 이 미들웨어를 공통 적용한다(라우트 정의 단계에서 강제, 컨트롤러마다 재검증하지 않음).
+- **BR-01(인증 필수)**: Express 미들웨어(`middlewares/authMiddleware.js`)에서 access_token 검증 후 `req.user`에 사용자 정보를 주입. Todo/Category 관련 모든 라우트에 이 미들웨어를 공통 적용한다(라우트 정의 단계에서 강제, 컨트롤러마다 재검증하지 않음).
 - **BR-02(소유권 검증)**: Service 레이어에서 강제한다. 쿼리 자체에 `WHERE user_id = $1` 조건을 항상 포함시켜, 컨트롤러의 `req.user.id`를 서비스 함수 인자로 넘기는 구조로 소유권 누락을 원천 차단한다. 이중 검증(존재 확인 후 별도 owner 비교)은 하지 않고 쿼리 조건 자체로 해결한다.
 
 ### 5.4 DB 커넥션 풀 (1,000명 동시접속 최소 대비)
@@ -149,7 +149,11 @@
 
 ### 5.5 로깅
 
-- 최소한의 요청 로깅(morgan 등)과 에러 로깅(콘솔 또는 간단한 파일)만 적용한다. 구조화 로깅 시스템(ELK 등) 도입은 이번 범위에서 생략.
+- 요청 로깅은 별도 라이브러리(morgan 등) 없이 `app.js`의 콘솔 로깅 미들웨어(`[timestamp] METHOD url`)로 최소 구현한다. 에러 로깅도 콘솔(`console.error`)로 충분. 구조화 로깅 시스템(ELK 등) 도입은 이번 범위에서 생략.
+
+### 5.6 API 문서 UI
+
+- `swagger-ui-express`로 `backend/swagger.json`을 `/docs` 경로에 서빙한다. `NODE_ENV=production`일 때는 마운트하지 않음(API 명세를 운영 환경에 공개하지 않기 위함) — `config/env.js`의 `nodeEnv` 값으로 분기.
 
 ---
 
@@ -256,13 +260,19 @@ backend/
 │   │   └── errorHandler.js            # 표준화된 에러 응답
 │   ├── utils/
 │   │   ├── computeTodoStatus.js       # 도메인정의서 5장 상태 판별 (단일 출처)
-│   │   └── validators.js              # BR-05 등 입력 검증 함수
+│   │   ├── errors.js                  # AppError 클래스 (statusCode/code/message)
+│   │   └── jwt.js                     # access/refresh 토큰 발급·검증 (jsonwebtoken 래핑)
 │   ├── config/
 │   │   └── env.js                     # 환경변수 로드/검증
 │   └── app.js                          # Express 앱 초기화
-├── tests/
-│   ├── todoService.test.js             # 4장 필수 테스트 케이스
-│   └── todo.integration.test.js
+├── tests/                              # Node 내장 node:test, 엔드포인트/함수 단위로 파일 분리
+│   ├── env.test.js, pool.test.js, dbConnectionStartup.test.js   # BE-01/02
+│   ├── authService.test.js, authSignup.test.js, authLoginApi.test.js,
+│   │   authMiddleware.test.js, authRefreshApi.test.js, jwt.test.js   # BE-03~05
+│   ├── categoryListApi.test.js                                       # BE-06
+│   ├── computeTodoStatus.test.js, todoCreateApi.test.js,
+│   │   todoListApi.test.js, todoUpdateApi.test.js, todoDeleteApi.test.js  # BE-07~10
+│   └── app.test.js, errorHandler.test.js                              # BE-11
 ├── .env.example
 └── package.json
 ```

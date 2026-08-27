@@ -91,93 +91,93 @@
 
 - **수행 작업**: `POST /auth/signup` — email/password/name 입력받아 비밀번호 해시(bcrypt 등) 후 `users` 테이블에 저장. 라우트→컨트롤러→서비스→쿼리 4계층 구현.
 - **완료 조건**:
-  - [ ] 정상 입력 시 201 응답과 함께 사용자 생성됨 (비밀번호는 평문 저장되지 않음, 도메인정의서 3.1)
-  - [ ] 중복 email 가입 시 409 등 명확한 에러 응답 (BR-03)
-  - [ ] 회원가입 시 해당 사용자의 "기본" 카테고리가 자동 생성됨 (BR-04)
+  - [x] 정상 입력 시 201 응답과 함께 사용자 생성됨 (비밀번호는 평문 저장되지 않음, 도메인정의서 3.1)
+  - [x] 중복 email 가입 시 409 등 명확한 에러 응답 (BR-03)
+  - [x] 회원가입 시 해당 사용자의 "기본" 카테고리가 자동 생성됨 (BR-04)
 - **선행 Task**: BE-02
 
 ### BE-04. 로그인/JWT 발급 API (UC-02)
 
 - **수행 작업**: `POST /auth/login` — email/password 검증 후 access_token(단명)·refresh_token(장명) 발급. refresh_token은 httpOnly 쿠키로, access_token은 응답 바디로 반환 (PRD 6·7장).
 - **완료 조건**:
-  - [ ] 올바른 자격증명으로 로그인 시 access_token(바디)과 refresh_token(Set-Cookie httpOnly) 발급 확인
-  - [ ] 틀린 email/password 시 401 응답
-  - [ ] access_token 페이로드에 `userId`가 포함됨
+  - [x] 올바른 자격증명으로 로그인 시 access_token(바디)과 refresh_token(Set-Cookie httpOnly) 발급 확인
+  - [x] 틀린 email/password 시 401 응답
+  - [x] access_token 페이로드에 `userId`가 포함됨
 - **선행 Task**: BE-03
 
 ### BE-05. 인증 미들웨어 + 토큰 재발급 (BR-01)
 
 - **수행 작업**: `middlewares/authMiddleware.js`에서 access_token 검증 후 `req.user` 주입. `POST /auth/refresh` 엔드포인트로 refresh_token 검증 후 access_token 재발급.
 - **완료 조건**:
-  - [ ] access_token 없이 보호된 라우트 호출 시 401 응답 (BR-01)
-  - [ ] 만료된 access_token + 유효한 refresh_token으로 `/auth/refresh` 호출 시 새 access_token 발급
-  - [ ] refresh_token도 만료/무효인 경우 재발급 거부 및 재로그인 요구 응답
+  - [x] access_token 없이 보호된 라우트 호출 시 401 응답 (BR-01)
+  - [x] 만료된 access_token + 유효한 refresh_token으로 `/auth/refresh` 호출 시 새 access_token 발급
+  - [x] refresh_token도 만료/무효인 경우 재발급 거부 및 재로그인 요구 응답
 - **선행 Task**: BE-04
 
 ### BE-06. 카테고리 조회/기본값 처리 (UC-09)
 
 - **수행 작업**: `categoryService.js`/`categoryQueries.js` — 사용자별 카테고리 목록 조회 API, "기본" 카테고리 자동 생성 로직(BE-03 회원가입 시 호출).
 - **완료 조건**:
-  - [ ] `GET /categories`가 인증된 사용자 본인 카테고리만 반환 (BR-02)
-  - [ ] "기본" 카테고리는 삭제 API 대상에서 제외됨(삭제 엔드포인트 자체를 노출하지 않음, BR-04, OI-01 회피)
+  - [x] `GET /categories`가 인증된 사용자 본인 카테고리만 반환 (BR-02)
+  - [x] "기본" 카테고리는 삭제 API 대상에서 제외됨(삭제 엔드포인트 자체를 노출하지 않음, BR-04, OI-01 회피)
 - **선행 Task**: BE-05
 
 ### BE-07. 할일 등록 API (UC-04)
 
 - **수행 작업**: `POST /todos` — title/startDate/endDate/(categoryId 선택) 입력받아 생성. categoryId 미지정 시 사용자 "기본" 카테고리로 대체(BR-04), startDate<=endDate 검증(BR-05).
 - **완료 조건**:
-  - [ ] 정상 등록 시 201과 생성된 Todo(계산된 status 포함 없이 raw 데이터) 반환
-  - [ ] categoryId 미지정 시 응답의 categoryId가 사용자의 "기본" 카테고리 id와 일치
-  - [ ] endDate < startDate 입력 시 400 응답 (BR-05)
-  - [ ] 인증 없이 호출 시 401 (BR-01)
+  - [x] 정상 등록 시 201과 생성된 Todo(계산된 status 포함 없이 raw 데이터) 반환
+  - [x] categoryId 미지정 시 응답의 categoryId가 사용자의 "기본" 카테고리 id와 일치
+  - [x] endDate < startDate 입력 시 400 응답 (BR-05)
+  - [x] 인증 없이 호출 시 401 (BR-01)
 - **선행 Task**: BE-05, BE-06
 
 ### BE-08. 할일 목록 조회 + 필터링 API (UC-05, UC-06)
 
 - **수행 작업**: `GET /todos?category=&status=` — 본인 소유 Todo만 조회(BR-02), 각 항목에 도메인정의서 5장 규칙으로 계산한 `status`(NOT_STARTED/IN_PROGRESS/DONE/OVERDUE)를 포함해 반환. `utils/computeTodoStatus.js` 단일 함수로 구현(BR-06).
 - **완료 조건**:
-  - [ ] 필터 없이 호출 시 본인 Todo 전체가 status 포함되어 반환
-  - [ ] `category` 쿼리 파라미터로 카테고리별 필터링 동작
-  - [ ] `status` 파라미터로 시작전/진행중/완료/지연 각각 필터링 동작
-  - [ ] 완료(is_done=true)된 항목은 종료일이 지났어도 OVERDUE가 아닌 DONE으로 반환 (도메인정의서 5장 우선순위 규칙)
-  - [ ] 타 사용자의 Todo는 결과에 포함되지 않음 (BR-02)
+  - [x] 필터 없이 호출 시 본인 Todo 전체가 status 포함되어 반환
+  - [x] `category` 쿼리 파라미터로 카테고리별 필터링 동작
+  - [x] `status` 파라미터로 시작전/진행중/완료/지연 각각 필터링 동작
+  - [x] 완료(is_done=true)된 항목은 종료일이 지났어도 OVERDUE가 아닌 DONE으로 반환 (도메인정의서 5장 우선순위 규칙)
+  - [x] 타 사용자의 Todo는 결과에 포함되지 않음 (BR-02)
 - **선행 Task**: BE-07
 
 ### BE-09. 할일 수정 API (UC-07)
 
 - **수행 작업**: `PATCH /todos/:id` — 제목/기간/카테고리/완료여부 수정. 본인 소유만 수정 가능(BR-02), endDate 검증(BR-05), isDone 토글 시 completedAt 기록/초기화(BR-07).
 - **완료 조건**:
-  - [ ] 정상 수정 시 변경 내용 반영 및 200 응답
-  - [ ] 타인 소유 Todo 수정 시도 시 403 또는 404 (BR-02)
-  - [ ] endDate < startDate로 수정 시도 시 400 (BR-05)
-  - [ ] isDone false→true 전환 시 completedAt에 현재 시각 기록, true→false 전환 시 completedAt이 null로 초기화 (BR-07)
+  - [x] 정상 수정 시 변경 내용 반영 및 200 응답
+  - [x] 타인 소유 Todo 수정 시도 시 403 또는 404 (BR-02)
+  - [x] endDate < startDate로 수정 시도 시 400 (BR-05)
+  - [x] isDone false→true 전환 시 completedAt에 현재 시각 기록, true→false 전환 시 completedAt이 null로 초기화 (BR-07)
 - **선행 Task**: BE-08
 
 ### BE-10. 할일 삭제 API (UC-08)
 
 - **수행 작업**: `DELETE /todos/:id` — 본인 소유 Todo만 삭제 가능(BR-02).
 - **완료 조건**:
-  - [ ] 본인 Todo 삭제 시 204 응답 및 DB에서 실제 제거 확인
-  - [ ] 타인 소유 Todo 삭제 시도 시 403 또는 404
+  - [x] 본인 Todo 삭제 시 204 응답 및 DB에서 실제 제거 확인
+  - [x] 타인 소유 Todo 삭제 시도 시 403 또는 404
 - **선행 Task**: BE-08
 
 ### BE-11. 공통 에러 핸들링
 
 - **수행 작업**: `middlewares/errorHandler.js` — 검증 실패/인증 실패/서버 에러를 일관된 JSON 포맷(`{ error: { code, message } }`)으로 응답.
 - **완료 조건**:
-  - [ ] 존재하지 않는 라우트 호출 시 404 JSON 응답
-  - [ ] 컨트롤러에서 발생한 예외가 500으로 죽지 않고 표준 포맷으로 응답
-  - [ ] BE-03~BE-10의 모든 에러 응답이 동일 포맷을 따름
+  - [x] 존재하지 않는 라우트 호출 시 404 JSON 응답
+  - [x] 컨트롤러에서 발생한 예외가 500으로 죽지 않고 표준 포맷으로 응답
+  - [x] BE-03~BE-10의 모든 에러 응답이 동일 포맷을 따름
 - **선행 Task**: BE-10
 
 ### BE-12. 백엔드 핵심 로직 최소 테스트
 
 - **수행 작업**: project-principle 4.1절 기준 — `computeTodoStatus`, BR-05/BR-02/BR-04/BR-07/BR-03 단위 테스트 및 UC-01/04/05/07/08 happy path API 통합 테스트(Jest/supertest) 작성.
 - **완료 조건**:
-  - [ ] `computeTodoStatus` 4개 상태 케이스 + "완료 시 지연 아님" 케이스 테스트 통과
-  - [ ] BR-05, BR-02, BR-04, BR-07, BR-03 각 1개 이상 테스트 통과
-  - [ ] UC-01/04/05/07/08 API 통합 테스트 각 1개 이상 통과
-  - [ ] `npm test` 전체 그린
+  - [x] `computeTodoStatus` 4개 상태 케이스 + "완료 시 지연 아님" 케이스 테스트 통과 (`tests/computeTodoStatus.test.js`)
+  - [x] BR-05, BR-02, BR-04, BR-07, BR-03 각 1개 이상 테스트 통과 (BR-05: todoCreateApi/todoUpdateApi, BR-02: categoryListApi/todoCreateApi/todoUpdateApi/todoDeleteApi, BR-04: authService/todoCreateApi, BR-07: todoUpdateApi, BR-03: authService/authSignup)
+  - [x] UC-01/04/05/07/08 API 통합 테스트 각 1개 이상 통과 (authSignup/todoCreateApi/todoListApi/todoUpdateApi/todoDeleteApi)
+  - [x] `npm test` 전체 그린 (102/102 통과)
 - **선행 Task**: BE-11
 
 ---
