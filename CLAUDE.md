@@ -19,6 +19,7 @@
 | DDL 스키마 | `docs/schema.sql` | PostgreSQL 17 기준 users/categories/todos 테이블 생성 DDL(제약조건·인덱스 포함) |
 | 실행 계획(WBS) | `docs/8-pan.md` | DB/백엔드/프론트엔드 단위로 분할한 실행 Task(수행 작업/체크박스 완료조건/선행 Task), Task-요구사항 추적 매트릭스, 의존성 흐름 |
 | API 명세 | `backend/swagger.json` | OpenAPI 3.0 형식의 TodoList API 명세(회원가입/로그인/토큰 재발급/카테고리 조회/할일 CRUD·필터링), JWT 인증 스킴, 요청·응답 스키마 및 에러 코드 정의 |
+| 스타일 가이드 | `docs/9-style.md` | 프론트엔드 디자인 토큰(컬러 팔레트·타이포그래피·간격/반경/그림자) 및 컴포넌트 스타일(버튼/뱃지/카드/입력필드/헤더) 정의, 4-wireframe.md 상태 뱃지 색상 규칙과 반응형 브레이크포인트를 구체값으로 매핑 |
 
 ## 작업 원칙 (Andrej Karpathy 스타일, 출처: andrej-karpathy-skills/CLAUDE.md)
 
