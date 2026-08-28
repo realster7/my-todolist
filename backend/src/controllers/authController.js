@@ -1,6 +1,7 @@
 const authService = require('../services/authService');
 const jwtUtil = require('../utils/jwt');
 const { AppError } = require('../utils/errors');
+const config = require('../config/env');
 
 async function signup(req, res) {
   const { email, password, name } = req.body || {};
@@ -48,7 +49,10 @@ async function login(req, res) {
     const { user, accessToken, refreshToken } = await authService.login(email, password);
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      sameSite: 'strict',
+      // 프론트/백엔드가 서로 다른 도메인(Vercel 배포)이라 크로스사이트 쿠키 전송이 필요함.
+      // SameSite=None은 secure 필수라 운영에서만 켜고, 로컬 개발(HTTP, 동일 사이트)은 lax 유지.
+      sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
+      secure: config.nodeEnv === 'production',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
