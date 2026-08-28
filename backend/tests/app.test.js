@@ -20,9 +20,10 @@ test.after(async () => {
   await new Promise((resolve) => server.close(resolve));
 });
 
-test('GET /health returns status ok', async () => {
+test('GET /health returns status ok with current nodeEnv', async () => {
   const res = await fetch(`${baseUrl}/health`);
   assert.strictEqual(res.status, 200);
   const body = await res.json();
-  assert.deepStrictEqual(body, { status: 'ok' });
+  assert.strictEqual(body.status, 'ok');
+  assert.strictEqual(typeof body.nodeEnv, 'string');
 });

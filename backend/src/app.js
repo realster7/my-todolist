@@ -23,7 +23,9 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  // nodeEnv 노출: Vercel 환경변수 설정이 실제로 반영됐는지 배포본에서 바로 확인하기 위함
+  // (예: /docs가 운영에서도 열려있으면 여기 값으로 NODE_ENV 설정 여부를 바로 진단 가능).
+  res.json({ status: 'ok', nodeEnv: config.nodeEnv });
 });
 app.use('/auth', authRoutes);
 app.use('/categories', categoryRoutes);
