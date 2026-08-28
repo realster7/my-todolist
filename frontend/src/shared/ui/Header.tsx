@@ -25,7 +25,7 @@ export function Header({ userEmail, onLogout }: HeaderProps) {
   return (
     <header className="app-header">
       <Link to="/todos" className="app-header__logo">
-        TodoList
+        {t('app.name')}
       </Link>
       <nav className="app-header__nav">
         <select

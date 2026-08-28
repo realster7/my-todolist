@@ -23,9 +23,9 @@ describe('Header', () => {
     expect(screen.getByText('로그아웃')).toBeInTheDocument();
   });
 
-  it('로고(TodoList)는 /todos로 이동한다', () => {
+  it('로고는 /todos로 이동한다', () => {
     renderHeader();
-    expect(screen.getByText('TodoList')).toHaveAttribute('href', '/todos');
+    expect(screen.getByText('하루하루 일정 관리')).toHaveAttribute('href', '/todos');
   });
 
   it('내 정보 링크는 /profile로 이동한다', () => {

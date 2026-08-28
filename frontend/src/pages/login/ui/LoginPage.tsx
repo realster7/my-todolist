@@ -6,7 +6,7 @@ export function LoginPage() {
   const { t } = useLocale();
   return (
     <div className="login-page">
-      <h1 className="login-page__logo">TodoList</h1>
+      <h1 className="login-page__logo">{t('app.name')}</h1>
       <div className="login-page__card">
         <h2 className="login-page__title">{t('login.title')}</h2>
         <LoginForm />

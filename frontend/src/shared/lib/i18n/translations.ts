@@ -2,6 +2,8 @@ export const SUPPORTED_LOCALES = ['ko', 'en', 'ja', 'zh'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 const ko = {
+  'app.name': '하루하루 일정 관리',
+
   'header.myInfo': '내 정보',
   'header.logout': '로그아웃',
   'header.themeToLight': '라이트 모드로 전환',
@@ -79,6 +81,8 @@ const ko = {
 export type TranslationKey = keyof typeof ko;
 
 const en: Record<TranslationKey, string> = {
+  'app.name': 'Your Daily Planner',
+
   'header.myInfo': 'My Info',
   'header.logout': 'Log out',
   'header.themeToLight': 'Switch to light mode',
@@ -154,6 +158,8 @@ const en: Record<TranslationKey, string> = {
 };
 
 const ja: Record<TranslationKey, string> = {
+  'app.name': '一日一日のスケジュール管理',
+
   'header.myInfo': 'アカウント情報',
   'header.logout': 'ログアウト',
   'header.themeToLight': 'ライトモードに切り替え',
@@ -229,6 +235,8 @@ const ja: Record<TranslationKey, string> = {
 };
 
 const zh: Record<TranslationKey, string> = {
+  'app.name': '日常日程管理',
+
   'header.myInfo': '我的信息',
   'header.logout': '退出登录',
   'header.themeToLight': '切换到浅色模式',

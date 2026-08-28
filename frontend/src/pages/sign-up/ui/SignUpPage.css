@@ -36,6 +36,10 @@
 }
 
 @media (max-width: 768px) {
+  .sign-up-page {
+    padding: var(--space-6);
+  }
+
   .sign-up-page__card {
     max-width: 100%;
   }
