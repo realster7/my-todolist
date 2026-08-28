@@ -40,7 +40,9 @@
 
 @media (max-width: 767px) {
   .todo-list-item {
-    grid-template-columns: auto 1fr;
+    /* 체크박스 칸을 고정폭으로: auto로 두면 같은 컬럼에 오는 period(날짜 범위,
+       텍스트가 김)의 폭에 맞춰 체크박스 칸까지 늘어나 제목이 오른쪽으로 밀려버림. */
+    grid-template-columns: 24px 1fr;
     grid-template-areas:
       'checkbox title'
       'category category'
@@ -50,6 +52,7 @@
 
   .todo-list-item input[type='checkbox'] {
     grid-area: checkbox;
+    justify-self: start;
   }
 
   .todo-list-item__title {

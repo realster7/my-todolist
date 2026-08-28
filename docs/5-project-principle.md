@@ -10,6 +10,7 @@
 | 0.4.0 | 2026-08-27 | Daniel Kim | 실제 구현(BE-01~12)과 정합성 맞춤: 테스트 도구를 Jest/supertest 서술에서 Node 내장 `node:test`로 정정, 커버리지 측정 도구 생략 문구 삭제(실제 `--experimental-test-coverage` 사용), 환경변수 목록에 `NODE_ENV`/`CORS_ORIGIN` 추가, 5.6절(Swagger UI, 개발환경 전용) 신설, `middlewares/auth.js`→`authMiddleware.js` 오탈자 수정, 7장 `utils/`·`tests/` 트리를 실제 파일 목록으로 갱신 |
 | 0.5.0 | 2026-08-27 | Daniel Kim | 6장 프론트엔드 구조에 `features/calendar-view`(UC-10) 추가 |
 | 0.6.0 | 2026-08-27 | Daniel Kim | 실제 구현과 재정합: 7장에 `userController/userService/userRoutes`(UC-03) 및 `userUpdateApi.test.js` 추가, 6장에 `features/edit-profile`·`shared/lib/{apiError,theme,i18n}` 추가, `profile` 페이지 주석의 "P2 여유시" 문구 정정(구현 완료), 5.1절에 프론트엔드 환경변수(`VITE_API_BASE_URL`) 절 신설 |
+| 0.7.0 | 2026-08-28 | Daniel Kim | 5.7절(Vercel 배포, 프론트/백엔드 분리) 신설 — 최초 배포 시 겪은 크로스도메인 쿠키/CORS/SSL/SPA 라우팅/콜드스타트 이슈와 조치를 문서화 |
 
 ---
 
@@ -158,6 +159,28 @@
 ### 5.6 API 문서 UI
 
 - `swagger-ui-express`로 `backend/swagger.json`을 `/docs` 경로에 서빙한다. `NODE_ENV=production`일 때는 마운트하지 않음(API 명세를 운영 환경에 공개하지 않기 위함) — `config/env.js`의 `nodeEnv` 값으로 분기.
+
+### 5.7 배포 (Vercel, 프론트/백엔드 분리)
+
+프론트(`todolist-ganadi`)와 백엔드(`todolist-ganadi-backend`)를 **서로 다른 Vercel 프로젝트·도메인**으로 배포한다. 이 구조 때문에 로컬 개발(같은 origin이나 다름없는 `localhost:5173`↔`localhost:3000`)에서는 드러나지 않던 크로스도메인 이슈가 실제 배포에서만 나타났다 — 최초 배포 시 겪은 문제와 조치를 그대로 남겨 재발 방지한다.
+
+**필수 환경변수 체크리스트** (하나라도 누락되면 로그인/세션이 깨짐):
+
+| 프로젝트 | 변수 | 값 | 비고 |
+| --- | --- | --- | --- |
+| 백엔드 | `NODE_ENV` | `production` | 미설정/오설정 시 SSL 미적용·쿠키 `SameSite=Lax`·`/docs` 노출이 동시에 발생(아래 항목들이 전부 이 값에 분기). `/health` 응답의 `nodeEnv` 필드로 실제 배포본 값을 원격 확인 가능 |
+| 백엔드 | `DATABASE_URL` | 클라우드 Postgres(Neon/Supabase 등) 연결 문자열 | 로컬 Postgres는 서버리스 함수가 물리적으로 접근 불가. 최초 배포 시 마이그레이션(`npm run migrate`)을 클라우드 DB에 대해 한 번 더 돌려야 함(로컬에만 돌려놓고 착각하기 쉬움) |
+| 백엔드 | `CORS_ORIGIN` | 프론트 배포 도메인(예: `https://todolist-ganadi.vercel.app`) | 미설정 시 5.1절 폴백(전체 허용)으로 동작은 하지만, 명시적으로 좁혀 두는 걸 권장 |
+| 백엔드 | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` 등 | 5.1/5.2절과 동일 | |
+| 프론트 | `VITE_API_BASE_URL` | 백엔드 배포 도메인 | Vite는 **빌드 시점**에 값을 번들에 굽는다 — 대시보드에 값만 추가하고 재배포(rebuild)를 안 하면 반영 안 됨. 오타(예: `.vercel.app`을 `.vercal.app`로) 나면 조용히 실패하니 저장 직후 `/health`나 실제 로그인으로 검증할 것 |
+
+**코드가 `NODE_ENV=production`에서만 켜는 것들** (`pool.js`/`authController.js`):
+- DB 연결에 `ssl: { rejectUnauthorized: false }` — 클라우드 Postgres는 SSL 필수, `pg`는 연결 문자열에 `sslmode`가 없으면 SSL을 안 씀
+- `refresh_token` 쿠키를 `sameSite: 'none', secure: true`로 설정 — 프론트/백엔드가 다른 도메인(크로스사이트)이라 `sameSite: 'lax'`(로컬 개발 기본값)로는 새로고침·직접 URL 진입 시 브라우저가 쿠키를 아예 안 보내 세션이 매번 끊김. `SameSite=None`은 CSRF 노출을 넓히지 않는다 — 상태변경 API는 쿠키가 아니라 `Authorization` 헤더(access_token)로 인증하고, `/auth/refresh` 응답은 `CORS_ORIGIN` 화이트리스트 밖에서는 읽을 수 없기 때문
+
+**SPA 라우팅**: `frontend/vercel.json`에 `{"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}` 필수. 없으면 `/login`, `/todos` 등 직접 URL 진입·새로고침 시 Vercel 정적 호스팅이 404를 반환(React Router가 클라이언트 사이드 라우팅이라 실제 파일이 없음).
+
+**서버리스 콜드스타트 대응**: `pool.js`가 `pool.connect()`/`pool.query()`의 최초 연결 시도만 재시도한다(`db/withRetry.js`, ECONNREFUSED 등 연결 레벨 에러 한정, 최대 3회) — 콜드스타트 직후 DB 커넥션 수립이 간헐적으로 실패하는 문제 대응. 쿼리가 DB에 도달한 뒤의 에러(unique_violation 등)는 재시도하지 않는다(부작용 위험).
 
 ---
 
