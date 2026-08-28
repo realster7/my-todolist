@@ -67,6 +67,8 @@ const ko = {
   'profile.requiredError': '이름 또는 새 비밀번호를 입력해주세요.',
   'profile.genericError': '정보 수정에 실패했습니다. 잠시 후 다시 시도해주세요.',
 
+  'common.back': '뒤로가기',
+
   'todoList.viewList': '목록',
   'todoList.viewCalendar': '캘린더',
   'calendar.prevMonth': '이전 달',
@@ -142,6 +144,8 @@ const en: Record<TranslationKey, string> = {
   'profile.requiredError': 'Please enter a new name or password.',
   'profile.genericError': 'Failed to update profile. Please try again shortly.',
 
+  'common.back': 'Back',
+
   'todoList.viewList': 'List',
   'todoList.viewCalendar': 'Calendar',
   'calendar.prevMonth': 'Previous month',
@@ -215,6 +219,8 @@ const ja: Record<TranslationKey, string> = {
   'profile.requiredError': '新しい名前またはパスワードを入力してください。',
   'profile.genericError': '情報の更新に失敗しました。しばらくしてから再度お試しください。',
 
+  'common.back': '戻る',
+
   'todoList.viewList': 'リスト',
   'todoList.viewCalendar': 'カレンダー',
   'calendar.prevMonth': '前の月',
@@ -287,6 +293,8 @@ const zh: Record<TranslationKey, string> = {
   'profile.cancel': '取消',
   'profile.requiredError': '请输入新姓名或新密码。',
   'profile.genericError': '更新个人信息失败,请稍后重试。',
+
+  'common.back': '返回',
 
   'todoList.viewList': '列表',
   'todoList.viewCalendar': '日历',

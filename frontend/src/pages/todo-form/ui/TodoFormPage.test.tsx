@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { TodoFormPage } from './TodoFormPage';
 
@@ -78,5 +78,26 @@ describe('TodoFormPage', () => {
     renderPage('/todos/nonexistent/edit');
 
     expect(await screen.findByText(/할일을 찾을 수 없습니다/)).toBeInTheDocument();
+  });
+
+  it('뒤로가기 버튼 클릭 시 이전 화면으로 돌아간다', async () => {
+    stubFetch();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/todos', '/todos/new']} initialIndex={1}>
+          <Routes>
+            <Route path="/todos" element={<div>할일 목록 화면</div>} />
+            <Route path="/todos/new" element={<TodoFormPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+    await screen.findByText('업무');
+
+    fireEvent.click(screen.getByRole('button', { name: '뒤로가기' }));
+
+    expect(await screen.findByText('할일 목록 화면')).toBeInTheDocument();
   });
 });

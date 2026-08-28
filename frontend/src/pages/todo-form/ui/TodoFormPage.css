@@ -19,6 +19,26 @@
   padding: var(--space-5);
 }
 
+.todo-form-page__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 0 var(--space-3) calc(-1 * var(--space-2));
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.todo-form-page__back:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+}
+
 .todo-form-page__title {
   font-family: var(--font-family);
   font-size: var(--font-size-heading);
