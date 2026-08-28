@@ -13,6 +13,10 @@ const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
+// Vercel 등 리버스 프록시 뒤에서 X-Forwarded-For를 신뢰해야 express-rate-limit이
+// 프록시 IP 하나가 아니라 실제 요청자 IP별로 카운트한다.
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: config.corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());

@@ -251,6 +251,14 @@
             "schema": { "$ref": "#/components/schemas/Error" }
           }
         }
+      },
+      "TooManyRequests": {
+        "description": "요청 빈도 제한 초과 (IP당 15분에 10회, /auth/signup·/auth/login 대상 brute force 방어)",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
       }
     }
   },
@@ -278,7 +286,8 @@
             }
           },
           "400": { "$ref": "#/components/responses/BadRequest" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
         }
       }
     },
@@ -303,7 +312,7 @@
                 "description": "refresh_token (httpOnly)",
                 "schema": {
                   "type": "string",
-                  "example": "refresh_token=<jwt>; HttpOnly; Path=/; SameSite=Strict"
+                  "example": "refresh_token=<jwt>; HttpOnly; Path=/; SameSite=Lax (개발) 또는 SameSite=None; Secure (운영, 크로스도메인 배포)"
                 }
               }
             },
@@ -314,7 +323,8 @@
             }
           },
           "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
         }
       }
     },

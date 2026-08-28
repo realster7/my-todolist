@@ -11,6 +11,7 @@
 | 0.5.0 | 2026-08-27 | Daniel Kim | 6장 프론트엔드 구조에 `features/calendar-view`(UC-10) 추가 |
 | 0.6.0 | 2026-08-27 | Daniel Kim | 실제 구현과 재정합: 7장에 `userController/userService/userRoutes`(UC-03) 및 `userUpdateApi.test.js` 추가, 6장에 `features/edit-profile`·`shared/lib/{apiError,theme,i18n}` 추가, `profile` 페이지 주석의 "P2 여유시" 문구 정정(구현 완료), 5.1절에 프론트엔드 환경변수(`VITE_API_BASE_URL`) 절 신설 |
 | 0.7.0 | 2026-08-28 | Daniel Kim | 5.7절(Vercel 배포, 프론트/백엔드 분리) 신설 — 최초 배포 시 겪은 크로스도메인 쿠키/CORS/SSL/SPA 라우팅/콜드스타트 이슈와 조치를 문서화 |
+| 0.8.0 | 2026-08-28 | Daniel Kim | 보안 점검 결과 반영: 5.8절(Rate Limiting) 신설 — 로그인/가입 brute force 방어 |
 
 ---
 
@@ -181,6 +182,13 @@
 **SPA 라우팅**: `frontend/vercel.json`에 `{"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}` 필수. 없으면 `/login`, `/todos` 등 직접 URL 진입·새로고침 시 Vercel 정적 호스팅이 404를 반환(React Router가 클라이언트 사이드 라우팅이라 실제 파일이 없음).
 
 **서버리스 콜드스타트 대응**: `pool.js`가 `pool.connect()`/`pool.query()`의 최초 연결 시도만 재시도한다(`db/withRetry.js`, ECONNREFUSED 등 연결 레벨 에러 한정, 최대 3회) — 콜드스타트 직후 DB 커넥션 수립이 간헐적으로 실패하는 문제 대응. 쿼리가 DB에 도달한 뒤의 에러(unique_violation 등)는 재시도하지 않는다(부작용 위험).
+
+### 5.8 요청 빈도 제한 (Rate Limiting)
+
+- `express-rate-limit`으로 `POST /auth/signup`, `POST /auth/login`에 IP당 15분 10회 제한 적용(`middlewares/rateLimiter.js`, PRD 6장). 목적은 비밀번호 brute force와 가입 스팸 방어.
+- 기본(메모리) 저장소 사용 — 단일 인스턴스 기준이라 서버리스 환경에서 인스턴스가 여러 개로 늘어나면 인스턴스별로 카운트가 나뉜다(트래픽 커지면 Redis 등 공유 저장소로 교체 필요, 지금 규모에선 과함).
+- `POST /auth/refresh`는 제한 대상에서 제외(쿠키 기반 자동 재발급 흐름이라 반복 호출이 정상 사용 패턴).
+- Vercel 등 리버스 프록시 뒤에서 IP별로 정확히 카운트하려면 `app.set('trust proxy', 1)` 필요(`app.js`) — 없으면 프록시 IP 하나로 뭉뚱그려져 전체 사용자가 하나의 한도를 공유하게 됨.
 
 ---
 
